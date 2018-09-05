@@ -16,7 +16,7 @@ FirmwareManager::FirmwareManager() :
 	Thread("Firmwares"),
 	selectedFirmware(nullptr)
 {
-	firmwareFolder = File::getSpecialLocation(File::SpecialLocationType::commonApplicationDataDirectory).getChildFile("FlowtoysFirmwares");
+	firmwareFolder = File::getSpecialLocation(File::SpecialLocationType::userApplicationDataDirectory).getChildFile("FlowtoysFirmwares");
 	if (!firmwareFolder.exists()) firmwareFolder.createDirectory();
 
 	startThread();
@@ -37,6 +37,12 @@ void FirmwareManager::loadFirmwares()
 	DBG("Found " << files.size() << " local files");
 	for (auto &f : files)
 	{
+        if(f.getSize() == 0)
+        {
+            DBG("Wrong file size, removing file");
+            f.deleteFile();
+            continue;
+        }
 		ZipFile zip(f);
 		const ZipFile::ZipEntry * meta = zip.getEntry("meta");
 		const ZipFile::ZipEntry * data = zip.getEntry("data");
@@ -107,7 +113,7 @@ void FirmwareManager::run()
 	}
 #endif
 
-	DBG("AppUpdater:: Status code " << statusCode);
+	DBG("Firmware updater:: Status code " << statusCode);
 
 	if (stream != nullptr)
 	{
@@ -133,8 +139,15 @@ void FirmwareManager::run()
 					} else
 					{
 						DBG("Downloading " << fileData[i].toString() << "..");
-						URL downloadURL(remoteHost + "/firmwares/" + fileData[i]);
-						downloadURL.downloadToFile(f, "", this);
+						URL downloadURL(remoteHost + String("/firmwares/") + fileData[i].toString());
+                        URL::DownloadTask * t = downloadURL.downloadToFile(f, "", this);
+                        if(t == nullptr)
+                        {
+                            DBG("Download errored");
+                        }else
+                        {
+                            tasks.add(t);
+                        }
 					}
 				}
 			}
@@ -151,6 +164,11 @@ void FirmwareManager::run()
 
 }
 
+void FirmwareManager::progress (URL::DownloadTask* task, int64 bytesDownloaded, int64 totalLength)
+{
+    DBG("Progress !");
+}
+
 void FirmwareManager::finished(URL::DownloadTask * task, bool success)
 {
 	if (success)
@@ -161,5 +179,8 @@ void FirmwareManager::finished(URL::DownloadTask * task, bool success)
 			DBG("ALL firmware downloaded !");
 			loadFirmwares();
 		}
-	}
+	}else
+    {
+        DBG("Finished with errors");
+    }
 }

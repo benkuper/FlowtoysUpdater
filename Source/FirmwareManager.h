@@ -50,9 +50,10 @@ public:
 	~FirmwareManager();
 
 	FirmwareComparator comparator;
-
+ 
 	const String remoteHost = "http://flow-toys.com/fusion/";
 	File firmwareFolder;
+    OwnedArray<URL::DownloadTask> tasks;
 
 	Firmware * selectedFirmware;
 
@@ -67,5 +68,6 @@ public:
 	virtual void run() override;
 
 	// Inherited via Listener
-	virtual void finished(URL::DownloadTask * task, bool success) override;
+    virtual void progress (URL::DownloadTask* task, int64 bytesDownloaded, int64 totalLength) override;
+    virtual void finished(URL::DownloadTask * task, bool success) override;
 };
