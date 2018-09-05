@@ -15,7 +15,7 @@
 #define PACKET_SIZE 64
 #define DATA_PACKET_MAX_LENGTH (PACKET_SIZE-4) //4 bytes for command then data
 
-enum PropType { CAPSULE, CLUB, TYPE_MAX };
-const String typeStrings[TYPE_MAX]{ "Capsule", "Club" };
-const int productIds[TYPE_MAX]{ 0x1000, 0x1001 };
+enum PropType {NOTSET, CAPSULE, CLUB, TYPE_MAX };
+const String typeStrings[TYPE_MAX]{"NotSet", "Capsule", "Club" };
+const int productIds[TYPE_MAX]{0, 0x1000, 0x1001 };
 const int flowtoysVID = 0xF107;

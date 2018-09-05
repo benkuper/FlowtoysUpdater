@@ -16,7 +16,8 @@
 class FirmwareChooserScreen :
 	public AppScreen,
 	public Button::Listener,
-	public ComboBox::Listener
+	public ComboBox::Listener,
+	public FirmwareManager::AsyncListener
 {
 public:
 	FirmwareChooserScreen();
@@ -27,9 +28,14 @@ public:
 
 	TextButton selectBT;
 
+	void updateVisibility();
+
+	void paint(Graphics &g) override;
 	void reset() override;
 
 	void resized() override;
+
+	void newMessage(const FirmwareManager::FirmwareManagerEvent & e) override;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FirmwareChooserScreen)
 

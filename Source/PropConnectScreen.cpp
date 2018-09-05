@@ -30,8 +30,19 @@ void PropConnectScreen::paint(Graphics & g)
 	Rectangle<int> r = getLocalBounds();
 	Rectangle<int> fr = r.removeFromBottom(100);
 
+	int numProps = PropManager::getInstance()->props.size();
+	String s = numProps == 0?"Connect all the props you want to update":String(numProps) + " " + typeStrings[(int)(PropManager::getInstance()->selectedType)] + " connected :\n";
+	int index = 0;
+	for (auto &p : PropManager::getInstance()->props)
+	{
+		if (index > 0) s += "\n";
+		s += "["+ String(index) + "] "+ p->infos;
+		index++;
+	}
+
+
 	g.setColour(Colours::lightgrey);
-	g.drawFittedText(String(PropManager::getInstance()->props.size()) + " " + typeStrings[(int)(PropManager::getInstance()->selectedType)] + " connected", r, Justification::centred, 3);
+	g.drawFittedText(s, r, Justification::centred, numProps+1);
 }
 
 void PropConnectScreen::resized()

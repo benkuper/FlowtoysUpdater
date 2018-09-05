@@ -31,7 +31,7 @@ Prop::Prop(StringRef serial, hid_device * device, PropType type, int vid, int pi
 	sendGetVersion(Bootloader);
 	sendGetVersion(App);
 
-	infos = "Type : " + typeStrings[(int)type] + "\nVersion : " + fwVersion + "\nDate : " + fw_date + "\nRevision : " + gitRevString;
+	infos = /*"Type : " + typeStrings[(int)type] + ", */"Version : " + fwVersion + ", Date : " + fw_date + ", Revision : " + gitRevString;
 }
 
 Prop::~Prop()

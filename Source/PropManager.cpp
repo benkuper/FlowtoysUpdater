@@ -17,7 +17,8 @@ juce_ImplementSingleton(PropManager)
 PropManager::PropManager() :
 	Thread("Props"),
 	queuedNotifier(100),
-	shouldCheck(false)
+	shouldCheck(false),
+	selectedType(NOTSET)
 {
 	startTimerHz(1);
 }
@@ -101,6 +102,8 @@ Prop * PropManager::getItemWithHidDevice(hid_device * device)
 
 Prop * PropManager::openDevice(hid_device_info * deviceInfo)
 {
+	if (deviceInfo->vendor_id == 0 || deviceInfo->product_id == 0 || deviceInfo->serial_number == 0) return nullptr;
+
 	hid_device * d = hid_open(deviceInfo->vendor_id, deviceInfo->product_id, deviceInfo->serial_number);
 	if (d == NULL)
 	{

@@ -78,7 +78,7 @@ void ScreenManager::resized()
 		curScreen->setBounds(r);
 	}
 
-	prevBT.setBounds(r.removeFromLeft(100).withSizeKeepingCentre(30, 20));
+	prevBT.setBounds(r.removeFromLeft(100).withSizeKeepingCentre(20, 20));
 	
 }
 
@@ -117,6 +117,7 @@ void ScreenManager::setScreen(AppScreen * s)
 	curScreen->reset();
 	addAndMakeVisible(curScreen);
 	prevBT.toFront(false);
+	prevBT.setVisible(screens.indexOf(curScreen) > 0 && screens.indexOf(curScreen) < screens.size() - 1);
 
 	repaint();
 	resized();

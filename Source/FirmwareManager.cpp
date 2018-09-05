@@ -14,7 +14,9 @@ juce_ImplementSingleton(FirmwareManager)
 
 FirmwareManager::FirmwareManager() :
 	Thread("Firmwares"),
-	selectedFirmware(nullptr)
+	selectedFirmware(nullptr),
+	queuedNotifier(50),
+	errored(false)
 {
 	firmwareFolder = File::getSpecialLocation(File::SpecialLocationType::userApplicationDataDirectory).getChildFile("FlowtoysFirmwares");
 	if (!firmwareFolder.exists()) firmwareFolder.createDirectory();
@@ -26,6 +28,12 @@ FirmwareManager::~FirmwareManager()
 {
 	signalThreadShouldExit();
 	waitForThreadToExit(1000);
+}
+
+void FirmwareManager::initLoad()
+{
+
+	startThread();
 }
 
 void FirmwareManager::loadFirmwares()
@@ -50,9 +58,9 @@ void FirmwareManager::loadFirmwares()
 
 		//data
 		ScopedPointer<InputStream> dataStream = zip.createStreamForEntry(*data);
-		int numBytesToSend = dataStream->getTotalLength();
-		float numDataPackets = ceilf(numBytesToSend*1.0f / DATA_PACKET_MAX_LENGTH);
-		int totalBytesToSend = numDataPackets * DATA_PACKET_MAX_LENGTH;
+		int numBytesToSend = (int)dataStream->getTotalLength();
+		float numDataPackets = (float)(ceilf(numBytesToSend*1.0f / DATA_PACKET_MAX_LENGTH));
+		int totalBytesToSend = (int)(numDataPackets * DATA_PACKET_MAX_LENGTH);
 		DBG("File size : " << numBytesToSend << ", split into " << numDataPackets << " =  " << totalBytesToSend << " total bytes");
 		MemoryBlock fwData;
 		dataStream->readIntoMemoryBlock(fwData);
@@ -81,12 +89,20 @@ void FirmwareManager::loadFirmwares()
 	firmwares.sort(comparator, true);
 
 	DBG(firmwares.size() << " loaded.");
+	queuedNotifier.addMessage(new FirmwareManagerEvent(FirmwareManagerEvent::FIRMWARE_LOADED));
+}
+
+bool FirmwareManager::firmwaresAreLoaded()
+{
+	return firmwares.size() > 0;
 }
 
 Array<Firmware *> FirmwareManager::getFirmwaresForType(PropType type)
 {
-	int targetPID = productIds[type];
 	Array<Firmware *> result;
+	if (type == NOTSET) return result;
+
+	int targetPID = productIds[type];
 	for (auto &f : firmwares)
 	{
 		if (f->pid == targetPID) result.add(f);
@@ -97,6 +113,7 @@ Array<Firmware *> FirmwareManager::getFirmwaresForType(PropType type)
 
 void FirmwareManager::run()
 {
+	errored = false;
 
 	StringPairArray responseHeaders;
 	int statusCode = 0;
@@ -109,6 +126,8 @@ void FirmwareManager::run()
 	if (statusCode != 200)
 	{
 		DBG("Failed to connect, status code = " << String(statusCode));
+		errored = true;
+		loadFirmwares();
 		return;
 	}
 #endif
@@ -144,6 +163,7 @@ void FirmwareManager::run()
                         if(t == nullptr)
                         {
                             DBG("Download errored");
+							downloadedFirmwares++;
                         }else
                         {
                             tasks.add(t);
@@ -154,11 +174,14 @@ void FirmwareManager::run()
 		} else
 		{
 			DBG("Error reading online firmware list, loading local firmwares");
+			errored = true;
 			loadFirmwares();
 		}
 	} else
 	{
 		DBG("Couldn't access internet, loading local firmwares");
+		errored = true;
+		queuedNotifier.addMessage(new FirmwareManagerEvent(FirmwareManagerEvent::FIRMWARE_LOAD_ERROR));
 		loadFirmwares();
 	}
 
@@ -171,9 +194,11 @@ void FirmwareManager::progress (URL::DownloadTask* task, int64 bytesDownloaded, 
 
 void FirmwareManager::finished(URL::DownloadTask * task, bool success)
 {
+	downloadedFirmwares++;
+
 	if (success)
 	{
-		downloadedFirmwares++;
+		
 		if (downloadedFirmwares == onlineFirmwares)
 		{
 			DBG("ALL firmware downloaded !");
@@ -182,5 +207,7 @@ void FirmwareManager::finished(URL::DownloadTask * task, bool success)
 	}else
     {
         DBG("Finished with errors");
+
+		queuedNotifier.addMessage(new FirmwareManagerEvent(FirmwareManagerEvent::FIRMWARE_LOAD_ERROR));
     }
 }

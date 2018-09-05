@@ -14,7 +14,7 @@
 PropChooserScreen::PropChooserScreen() :
 	AppScreen("Prop Type")
 {
-	for (int i = 0; i < TYPE_MAX; i++)
+	for (int i = 1; i < TYPE_MAX; i++)
 	{
 		int dataSize = 0;
 		const char * imageData = BinaryData::getNamedResource((typeStrings[i] + "_png").getCharPointer(), dataSize);
@@ -29,11 +29,23 @@ PropChooserScreen::PropChooserScreen() :
 		addAndMakeVisible(b);
 		buttons.add(b);
 		b->addListener(this);
+
+		Label * l = new Label(typeStrings[i], typeStrings[i]);
+		l->setColour(Label::textColourId, Colours::lightgrey);
+		addAndMakeVisible(l);
+		labels.add(l);
+		l->setJustificationType(Justification::centred);
 	}
 }
 
 PropChooserScreen::~PropChooserScreen()
 {
+}
+
+void PropChooserScreen::paint(Graphics & g)
+{
+	g.setColour(Colours::lightgrey);
+	g.drawFittedText("Choose the type of prop that you want to update", getLocalBounds().removeFromTop(100).reduced(20), Justification::centred, 3);
 }
 
 void PropChooserScreen::resized()
@@ -46,12 +58,13 @@ void PropChooserScreen::resized()
 	{
 		Point<int> p = cp + Point<int>((i - (buttons.size() / 2.0f) + .5f)*gap, 0);
 		buttons[i]->setCentrePosition(p);
+		labels[i]->setBounds(Rectangle<int>(0,0,100,20).withCentre(p.translated(0, buttons[i]->getHeight()/2+20)));
 	}
 }
 
 void PropChooserScreen::buttonClicked(Button * b)
 {
-	int index = buttons.indexOf(dynamic_cast<ImageButton *>(b));
+	int index = buttons.indexOf(dynamic_cast<ImageButton *>(b))+1;//start with notset
 	if (index == -1) return;
 
 	PropManager::getInstance()->setSelectedType((PropType)index);

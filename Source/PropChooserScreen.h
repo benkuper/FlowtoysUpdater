@@ -21,7 +21,9 @@ public:
 	~PropChooserScreen();
 
 	OwnedArray<ImageButton> buttons;
+	OwnedArray<Label> labels;
 
+	void paint(Graphics &g) override;
 	void resized() override;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PropChooserScreen)

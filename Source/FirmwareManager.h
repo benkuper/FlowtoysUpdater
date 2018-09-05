@@ -11,6 +11,7 @@
 #pragma once
 #include "JuceHeader.h"
 #include "PropConstants.h"
+#include "QueuedNotifier.h"
 
 class Firmware
 {
@@ -57,10 +58,14 @@ public:
 
 	Firmware * selectedFirmware;
 
+	void initLoad();
 	void loadFirmwares();
 
 	int downloadedFirmwares;
 	int onlineFirmwares;
+	bool errored;
+
+	bool firmwaresAreLoaded();
 
 	OwnedArray<Firmware> firmwares;
 	Array<Firmware *> getFirmwaresForType(PropType type);
@@ -70,4 +75,20 @@ public:
 	// Inherited via Listener
     virtual void progress (URL::DownloadTask* task, int64 bytesDownloaded, int64 totalLength) override;
     virtual void finished(URL::DownloadTask * task, bool success) override;
+
+
+	class FirmwareManagerEvent
+	{
+	public:
+		enum Type { FIRMWARE_LOADED, FIRMWARE_LOAD_ERROR };
+		FirmwareManagerEvent(Type type) : type(type) {}
+
+		Type type;
+	};
+
+	QueuedNotifier<FirmwareManagerEvent> queuedNotifier;
+	typedef QueuedNotifier<FirmwareManagerEvent>::Listener AsyncListener;
+	void addAsyncManagerListener(AsyncListener* newListener) { queuedNotifier.addListener(newListener); }
+	void addAsyncCoalescedManagerListener(AsyncListener* newListener) { queuedNotifier.addAsyncCoalescedListener(newListener); }
+	void removeAsyncManagerListener(AsyncListener* listener) { queuedNotifier.removeListener(listener); }
 };
