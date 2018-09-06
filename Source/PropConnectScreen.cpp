@@ -55,6 +55,9 @@ void PropConnectScreen::resized()
 
 void PropConnectScreen::reset()
 {
+    PropManager::getInstance()->clear();
+    
+    
 	PropManager::getInstance()->checkProps();
 }
 

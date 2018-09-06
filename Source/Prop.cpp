@@ -14,7 +14,8 @@
 
 
 
-Prop::Prop(StringRef serial, hid_device * device, PropType type, int vid, int pid, const wchar_t * serialNumber) :
+Prop::Prop(StringRef productString, StringRef serial, hid_device * device, PropType type, int vid, int pid, const wchar_t * serialNumber) :
+    productString(productString),
 	type(type),
 	serial(serial),
 	device(device),
@@ -28,10 +29,21 @@ Prop::Prop(StringRef serial, hid_device * device, PropType type, int vid, int pi
 	infos("[Not set]")
 {
 	
+    if(!this->productString.toLowerCase().contains("bootloader"))
+    {
+        DBG("App mode, reset to bootloader");
+        sendAppReset(Subject::Bootloader);
+        sendGetStatus();
+        return;
+    }
+    
 	sendGetVersion(Bootloader);
 	sendGetVersion(App);
 
+
 	infos = /*"Type : " + typeStrings[(int)type] + ", */"Version : " + fwVersion + ", Date : " + fw_date + ", Revision : " + gitRevString;
+    
+    
 }
 
 Prop::~Prop()
@@ -93,7 +105,7 @@ void Prop::sendGetStatus()
 		statusRawMessage = result->readString();
 
 
-		//DBG("Status response : " << cmd << " / " << deviceAckStatus << " / " << deviceStatus << " : " << statusRawMessage);
+		DBG("Status response : " << cmd << " / " << deviceAckStatus << " / " << deviceStatus << " : " << statusRawMessage);
 	}
 }
 
@@ -114,9 +126,11 @@ void Prop::sendGetVersion(Subject subject)
 
 		if (subject == App) appActive = result->readByte() == 1;
 		else bootloaderActive = result->readByte() == 1;
-
-		for (int i = 0; i<2; i++) result->readByte(); //2 useless bytes
-
+        
+        String s = "Subject " + String(subject) + " : ";
+		for (int i = 0; i<2; i++) s += String(result->readByte()) + ", "; //2 useless bytes
+        DBG(s);
+        
 		int _vid = result->readShort();
 		int _pid = result->readShort();
 		int _hw_rev = result->readShort();
@@ -317,6 +331,7 @@ void Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
 	}
 
 	DBG("Flashing done !");
+    sendAppReset(Subject::App);
 	//flashState->setValueWithData(SUCCESS);
 	setProgression(1);
 }

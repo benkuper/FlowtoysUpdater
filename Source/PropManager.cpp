@@ -20,13 +20,18 @@ PropManager::PropManager() :
 	shouldCheck(false),
 	selectedType(NOTSET)
 {
-	startTimerHz(1);
+	startTimerHz(2);
 }
 
 PropManager::~PropManager()
 {
 	signalThreadShouldExit();
 	waitForThreadToExit(1000);
+}
+
+void PropManager::clear()
+{
+    props.clear();
 }
 
 void PropManager::checkProps()
@@ -46,10 +51,18 @@ void PropManager::checkProps()
 	while (dInfo != nullptr)
 	{
 		Prop * p = getItemWithSerial(String(dInfo->serial_number));
+        
+        
 		if (p != nullptr)
 		{
 			//already opened, do nothing;
-		} else
+        }else if(!String(dInfo->product_string).toLowerCase().contains("bootloader"))
+        {
+            DBG("App mode, not connecting");
+            //sendAppReset(Subject::Bootloader);
+            //sendGetStatus();
+            //return;
+        }else
 		{
 			openDevice(dInfo);
 			changed = true;
@@ -111,9 +124,9 @@ Prop * PropManager::openDevice(hid_device_info * deviceInfo)
 		return nullptr;
 	}
 
-	DBG("Device opened : " << deviceInfo->serial_number << " : " << String::toHexString(deviceInfo->vendor_id) << ", " << String::toHexString(deviceInfo->product_id) << ", " << deviceInfo->product_string);
+	DBG("Device opened : " << deviceInfo->product_string << " (" << deviceInfo->manufacturer_string << ") " << deviceInfo->serial_number << " : " << String::toHexString(deviceInfo->vendor_id) << ", " << String::toHexString(deviceInfo->product_id) << ", " << deviceInfo->product_string);
 
-	Prop * cd = new Prop(String(deviceInfo->serial_number), d, getTypeForProductID(deviceInfo->product_id), (int)deviceInfo->vendor_id, (int)deviceInfo->product_id, deviceInfo->serial_number);
+	Prop * cd = new Prop(String(deviceInfo->product_string), String(deviceInfo->serial_number), d, getTypeForProductID(deviceInfo->product_id), (int)deviceInfo->vendor_id, (int)deviceInfo->product_id, deviceInfo->serial_number);
 	props.add(cd);
 	cd->addAsyncCapsuleListener(this);
 	return cd;

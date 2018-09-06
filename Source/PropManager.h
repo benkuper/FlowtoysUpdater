@@ -35,6 +35,7 @@ public:
 
 	void setSelectedType(PropType t);
 
+    void clear();
 	void reset();
 
 	Prop * getItemWithSerial(StringRef serial);

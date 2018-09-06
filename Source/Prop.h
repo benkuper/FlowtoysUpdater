@@ -18,11 +18,13 @@
 class Prop
 {
 public:
-	Prop(StringRef serial = "", hid_device * device = nullptr, PropType type = PropType::CAPSULE, int vid = 0, int pid = 0, const wchar_t * serialNumber = 0);
+	Prop(StringRef productString, StringRef serial = "", hid_device * device = nullptr, PropType type = PropType::CAPSULE, int vid = 0, int pid = 0, const wchar_t * serialNumber = 0);
 	~Prop();
 
 	enum FlashState { READY, FLASHING, SUCCESS, ERROR };
-
+    
+    String productString;
+    
 	//DeviceInfo from hidapi
 	int dVid;
 	int dPid;
