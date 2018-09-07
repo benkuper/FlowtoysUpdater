@@ -34,7 +34,7 @@ void FirmwareChooserScreen::updateVisibility()
 	
 	fwChooser.clear();
 	fwChooser.setTextWhenNoChoicesAvailable("No firmware available, are you connected to internet ?");
-	fwChooser.setTextWhenNothingSelected("Auto-select latest version");
+	fwChooser.setTextWhenNothingSelected("auto update");
 	fwList = FirmwareManager::getInstance()->getFirmwaresForType(PropManager::getInstance()->selectedType);
 	for (int i = 0; i < fwList.size(); i++)
 	{
@@ -62,7 +62,7 @@ void FirmwareChooserScreen::paint(Graphics & g)
 	else
 	{
 		g.setColour(Colours::lightgrey);
-		s = "Please choose your desired firmware. Leave default for auto-selecting latest version.";
+		s = "leave as \"auto update\" for the latest version\nor select your preferred firmware.";
 	}
 
 	g.drawFittedText(s, getLocalBounds().removeFromTop(100).reduced(40, 10), Justification::centred, 5, false);

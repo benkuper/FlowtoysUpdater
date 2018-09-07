@@ -36,6 +36,13 @@ void FirmwareManager::initLoad()
 	startThread();
 }
 
+void FirmwareManager::clearFirmwares()
+{
+	DBG("Clear firmwares");
+	Array<File> files = firmwareFolder.findChildFiles(File::TypesOfFileToFind::findFiles, false, "*.fwimg");
+	for (auto &f : files) f.deleteFile();
+}
+
 void FirmwareManager::loadFirmwares()
 {
 	firmwares.clear();
@@ -136,11 +143,14 @@ void FirmwareManager::run()
 
 	if (stream != nullptr)
 	{
-		String content = stream->readEntireStreamAsString();
+		String content = stream->readEntireStreamAsString(); 
 		var data = JSON::parse(content);
 
 		if (data.isObject())
 		{
+			bool shouldClear = data.getProperty("clear", false);
+			if (shouldClear) clearFirmwares();
+
 			var fileData = data.getProperty("files", var());
 			if (fileData.isArray())
 			{

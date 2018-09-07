@@ -65,9 +65,9 @@
             smallIcon="kGgGAD" bigIcon="kGgGAD">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" headerPath="../../External/hidapi/include"
-                       libraryPath="../../External/hidapi/lib/win/x64"/>
+                       libraryPath="../../External/hidapi/lib/win/x64" binaryPath="Binaries/Debug"/>
         <CONFIGURATION isDebug="0" name="Release" headerPath="../../External/hidapi/include"
-                       libraryPath="../../External/hidapi/lib/win/x64"/>
+                       libraryPath="../../External/hidapi/lib/win/x64" binaryPath="Binaries/Release"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../../../../../Softwares/JUCE/modules"/>

@@ -59,6 +59,7 @@ public:
 	Firmware * selectedFirmware;
 
 	void initLoad();
+	void clearFirmwares();
 	void loadFirmwares();
 
 	int downloadedFirmwares;

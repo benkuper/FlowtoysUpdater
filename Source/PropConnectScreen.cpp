@@ -31,7 +31,7 @@ void PropConnectScreen::paint(Graphics & g)
 	Rectangle<int> fr = r.removeFromBottom(100);
 
 	int numProps = PropManager::getInstance()->props.size();
-	String s = numProps == 0?"Connect all the props you want to update":String(numProps) + " " + typeStrings[(int)(PropManager::getInstance()->selectedType)] + " connected :\n";
+	String s = numProps == 0?"connect all the props to be updated via USB.\nyou can use a USB hub to update multiple compatible props at once.":String(numProps) + " " + displayNames[(int)(PropManager::getInstance()->selectedType)].toLowerCase() + " connected :\n";
 	int index = 0;
 	for (auto &p : PropManager::getInstance()->props)
 	{

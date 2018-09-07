@@ -30,7 +30,7 @@ PropChooserScreen::PropChooserScreen() :
 		buttons.add(b);
 		b->addListener(this);
 
-		Label * l = new Label(typeStrings[i], typeStrings[i]);
+		Label * l = new Label(typeStrings[i], displayNames[i].toLowerCase());
 		l->setColour(Label::textColourId, Colours::lightgrey);
 		addAndMakeVisible(l);
 		labels.add(l);
@@ -45,7 +45,7 @@ PropChooserScreen::~PropChooserScreen()
 void PropChooserScreen::paint(Graphics & g)
 {
 	g.setColour(Colours::lightgrey);
-	g.drawFittedText("Choose the type of prop that you want to update", getLocalBounds().removeFromTop(100).reduced(20), Justification::centred, 3);
+	g.drawFittedText("select the type of prop.", getLocalBounds().removeFromTop(100).reduced(20), Justification::centred, 3);
 }
 
 void PropChooserScreen::resized()

@@ -31,8 +31,7 @@ void UploadScreen::paint(Graphics & g)
 {
 	g.setColour(Colours::lightgrey);
 	Rectangle<int> r = getLocalBounds().withSizeKeepingCentre(300, 40).translated(0, -60);
-	g.drawFittedText(String("Flashing ") + String(PropManager::getInstance()->props.size()) + " with " + FirmwareManager::getInstance()->selectedFirmware->infos, r , Justification::centred, 5);
-
+	g.drawFittedText("updating with "+ FirmwareManager::getInstance()->selectedFirmware->infos + "\n- do not disconnect until complete -", r , Justification::centred, 5);
 	r.translate(0, 60);
 	r.setSize(300, 20);
 	g.fillRoundedRectangle(r.toFloat(), 2);

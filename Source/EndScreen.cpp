@@ -11,7 +11,7 @@
 #include "EndScreen.h"
 
 EndScreen::EndScreen() :
-	AppScreen("End"),
+	AppScreen("Complete"),
 	resetBT("Start again")
 {
 	resetBT.addListener(this);
@@ -25,7 +25,7 @@ EndScreen::~EndScreen()
 void EndScreen::paint(Graphics & g)
 {
 	g.setColour(Colours::lightgrey);
-	g.drawFittedText("Yay!\n your props have been updated sucessfully", getLocalBounds(), Justification::centred, 3);
+	g.drawFittedText("update successful.\ngo forth and find your flow ...", getLocalBounds(), Justification::centred, 3);
 }
 
 void EndScreen::resized()
