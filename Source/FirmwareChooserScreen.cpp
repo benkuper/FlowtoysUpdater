@@ -12,7 +12,7 @@
 #include "PropManager.h"
 
 FirmwareChooserScreen::FirmwareChooserScreen() :
-	AppScreen("Firmware"),
+	AppScreen("Firmware", FW_CHOOSE),
 	selectBT("Select")
 {
 	addChildComponent(selectBT);
@@ -36,6 +36,8 @@ void FirmwareChooserScreen::updateVisibility()
 	fwChooser.setTextWhenNoChoicesAvailable("No firmware available, are you connected to internet ?");
 	fwChooser.setTextWhenNothingSelected("auto update");
 	fwList = FirmwareManager::getInstance()->getFirmwaresForType(PropManager::getInstance()->selectedType);
+
+	fwChooser.addItem("auto update", -1);
 	for (int i = 0; i < fwList.size(); i++)
 	{
 		fwChooser.addItem(fwList[i]->infos, i + 1);
@@ -101,7 +103,7 @@ void FirmwareChooserScreen::buttonClicked(Button * b)
 	if (b == &selectBT)
 	{
 		int index = fwChooser.getSelectedId();
-		FirmwareManager::getInstance()->selectedFirmware = (index == 0 ? fwList[0] : fwList[index-1]);
+		FirmwareManager::getInstance()->selectedFirmware = (index <= 0 ? fwList[0] : fwList[index-1]);
 		screenListeners.call(&ScreenListener::screenFinish, this);
 	}
 }

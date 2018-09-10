@@ -127,10 +127,12 @@ void Prop::sendGetVersion(Subject subject)
 		if (subject == App) appActive = result->readByte() == 1;
 		else bootloaderActive = result->readByte() == 1;
         
-        String s = "Subject " + String(subject) + " : ";
-		for (int i = 0; i<2; i++) s += String(result->readByte()) + ", "; //2 useless bytes
+        /*
+		String sub = "Subject " + String(subject) + " : ";
+		for (int i = 0; i<2; i++) sub += String(result->readByte()) + ", "; //2 useless bytes
         DBG(s);
-        
+        */
+
 		int _vid = result->readShort();
 		int _pid = result->readShort();
 		int _hw_rev = result->readShort();

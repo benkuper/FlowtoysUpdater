@@ -10,8 +10,9 @@
 
 #include "Screen.h"
 
-AppScreen::AppScreen(const String &screenName) :
-	Component(screenName)
+AppScreen::AppScreen(const String &screenName, ScreenID id) :
+	Component(screenName),
+	id(id)
 {
 
 }

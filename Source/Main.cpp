@@ -13,6 +13,7 @@
 
 #include "PropManager.h"
 #include "FirmwareManager.h"
+#include "AppUpdater.h"
 
 //==============================================================================
 class FlowtoysUpdaterApplication  : public JUCEApplication
@@ -33,7 +34,12 @@ public:
 		PropManager::getInstance(); //init PropManager
 		FirmwareManager::getInstance(); //init 
 
+		
+
         mainWindow.reset (new MainWindow (getApplicationName()));
+
+		AppUpdater::getInstance()->setURLs(URL("http://flow-toys.com/fusion/update.json"), "http://flow-toys.com/fusion/app/", ProjectInfo::projectName);
+		AppUpdater::getInstance()->checkForUpdates();
     }
 
     void shutdown() override
@@ -42,6 +48,7 @@ public:
 
 		PropManager::deleteInstance();
 		FirmwareManager::deleteInstance();
+		AppUpdater::deleteInstance();
 
         mainWindow = nullptr; // (deletes our window)
     }
@@ -69,7 +76,7 @@ public:
     class MainWindow    : public DocumentWindow
     {
     public:
-        MainWindow (String name)  : DocumentWindow (name,
+        MainWindow (String name)  : DocumentWindow (name + " "+ProjectInfo::versionString,
                                                     Desktop::getInstance().getDefaultLookAndFeel()
                                                                           .findColour (ResizableWindow::backgroundColourId),
                                                     DocumentWindow::allButtons)

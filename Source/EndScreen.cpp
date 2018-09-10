@@ -9,13 +9,18 @@
 */
 
 #include "EndScreen.h"
+#include "ScreenManager.h"
 
 EndScreen::EndScreen() :
-	AppScreen("Complete"),
-	resetBT("Start again")
+	AppScreen("Complete", COMPLETE),
+	resetBT("Start again"),
+	reconnectBT("Flash other props with same firmware")
 {
 	resetBT.addListener(this);
 	addAndMakeVisible(&resetBT);
+
+	reconnectBT.addListener(this);
+	addAndMakeVisible(&reconnectBT);
 }
 
 EndScreen::~EndScreen()
@@ -30,7 +35,9 @@ void EndScreen::paint(Graphics & g)
 
 void EndScreen::resized()
 {
-	resetBT.setBounds(getLocalBounds().removeFromBottom(100).withSizeKeepingCentre(100, 20));
+	Rectangle<int> r = getLocalBounds().removeFromBottom(100).withSizeKeepingCentre(100, 20).expanded(10);
+	resetBT.setBounds(r.translated(-100, 0));
+	reconnectBT.setBounds(r.translated(100,0));
 }
 
 void EndScreen::buttonClicked(Button * b)
@@ -38,5 +45,8 @@ void EndScreen::buttonClicked(Button * b)
 	if (b == &resetBT)
 	{
 		screenListeners.call(&ScreenListener::screenFinish, this);
+	} else if(b == &reconnectBT)
+	{
+		screenListeners.call(&ScreenListener::gotoScreen, CONNECT);
 	}
 }

@@ -20,6 +20,7 @@ public:
 	~EndScreen();
 
 	TextButton resetBT;
+	TextButton reconnectBT;
 
 	void paint(Graphics &g) override;
 	void resized();

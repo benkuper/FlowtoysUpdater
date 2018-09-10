@@ -38,6 +38,7 @@ public:
 	void setScreen(AppScreen * s);
 
 	void screenFinish(AppScreen * s) override;
+	void gotoScreen(AppScreen::ScreenID id) override;
 
 	// Inherited via Listener
 	virtual void buttonClicked(Button *) override;

@@ -15,8 +15,13 @@
 class AppScreen : public Component
 {
 public:
-	AppScreen(const String &screenName);
+	enum ScreenID { PROP_CHOOSE, FW_CHOOSE, CONNECT, UPLOAD, COMPLETE };
+
+	AppScreen(const String &screenName, ScreenID id);
 	~AppScreen();
+
+
+	ScreenID id;
 
 	virtual void paint(Graphics &g) override;
 	virtual void resized() override;
@@ -27,8 +32,8 @@ public:
 	{
 	public:
 		virtual ~ScreenListener() {}
-
 		virtual void screenFinish(AppScreen *) {}
+		virtual void gotoScreen(ScreenID) {}
 	};
 
 	ListenerList<ScreenListener> screenListeners;

@@ -11,7 +11,7 @@
 #include "UploadScreen.h"
 
 UploadScreen::UploadScreen() :
-	AppScreen("Upload"),
+	AppScreen("Upload", UPLOAD),
 	progression(0)
 {
 	PropManager::getInstance()->addAsyncManagerListener(this);

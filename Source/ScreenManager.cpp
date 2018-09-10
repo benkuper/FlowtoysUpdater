@@ -128,6 +128,18 @@ void ScreenManager::screenFinish(AppScreen * s)
 	if (curScreen == s) nextScreen();
 }
 
+void ScreenManager::gotoScreen(AppScreen::ScreenID id)
+{
+	for (auto &ts : screens)
+	{
+		if (ts->id == id)
+		{
+			setScreen(ts);
+			return;
+		}
+	}
+}
+
 void ScreenManager::buttonClicked(Button * b)
 {
 	if (b == &prevBT)

@@ -11,7 +11,7 @@
 #include "PropConnectScreen.h"
 
 PropConnectScreen::PropConnectScreen() :
-	AppScreen("Connect Props"),
+	AppScreen("Connect Props", CONNECT),
 	flashBT("Upload")
 {
 	PropManager::getInstance()->addAsyncManagerListener(this);

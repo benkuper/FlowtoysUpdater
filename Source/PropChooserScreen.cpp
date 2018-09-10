@@ -12,7 +12,7 @@
 #include "PropManager.h"
 
 PropChooserScreen::PropChooserScreen() :
-	AppScreen("Prop Type")
+	AppScreen("Prop Type", PROP_CHOOSE)
 {
 	for (int i = 1; i < TYPE_MAX; i++)
 	{
