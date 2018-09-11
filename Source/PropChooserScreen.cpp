@@ -36,6 +36,8 @@ PropChooserScreen::PropChooserScreen() :
 		labels.add(l);
 		l->setJustificationType(Justification::centred);
 	}
+
+	setRepaintsOnMouseActivity(true);
 }
 
 PropChooserScreen::~PropChooserScreen()
@@ -46,6 +48,12 @@ void PropChooserScreen::paint(Graphics & g)
 {
 	g.setColour(Colours::lightgrey);
 	g.drawFittedText("select the type of prop.", getLocalBounds().removeFromTop(100).reduced(20), Justification::centred, 3);
+
+	for (auto & b : buttons)
+	{
+		g.setColour(b->isMouseOver()?Colours::lightblue:Colours::darkgrey);
+		g.drawRoundedRectangle(b->getBounds().toFloat(), 2, 2);
+	}
 }
 
 void PropChooserScreen::resized()
@@ -56,7 +64,7 @@ void PropChooserScreen::resized()
 
 	for (int i = 0; i < buttons.size(); i++)
 	{
-		Point<int> p = cp + Point<int>((i - (buttons.size() / 2.0f) + .5f)*gap, 0);
+		Point<int> p = cp + Point<int>((int)((i - (buttons.size() / 2.0f) + .5f) * gap), 0);
 		buttons[i]->setCentrePosition(p);
 		labels[i]->setBounds(Rectangle<int>(0,0,100,20).withCentre(p.translated(0, buttons[i]->getHeight()/2+20)));
 	}
