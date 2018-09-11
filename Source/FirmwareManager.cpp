@@ -14,9 +14,10 @@ juce_ImplementSingleton(FirmwareManager)
 
 FirmwareManager::FirmwareManager() :
 	Thread("Firmwares"),
-	selectedFirmware(nullptr),
-	queuedNotifier(50),
-	errored(false)
+    selectedFirmware(nullptr),
+    errored(false),
+    queuedNotifier(50)
+
 {
 	firmwareFolder = File::getSpecialLocation(File::SpecialLocationType::userApplicationDataDirectory).getChildFile("FlowtoysFirmwares");
 	if (!firmwareFolder.exists()) firmwareFolder.createDirectory();

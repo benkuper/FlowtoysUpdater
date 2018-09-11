@@ -16,9 +16,9 @@ juce_ImplementSingleton(PropManager)
 
 PropManager::PropManager() :
 	Thread("Props"),
-	queuedNotifier(100),
 	shouldCheck(false),
-	selectedType(NOTSET)
+	selectedType(NOTSET),
+    queuedNotifier(100)
 {
 	startTimerHz(2);
 }

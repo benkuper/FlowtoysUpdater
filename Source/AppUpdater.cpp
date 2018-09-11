@@ -12,13 +12,16 @@
 
 juce_ImplementSingleton(AppUpdater)
 
+#if JUCE_MAC //for chmod
+#include <sys/types.h>
+#include <sys/stat.h>
+#endif
 
-#define FORCE_UPDATE 0 //to test
 
 AppUpdater::AppUpdater() :
 	Thread("appUpdater"),
-	queuedNotifier(30),
-	progression(0)
+    progression(0),
+    queuedNotifier(30)
 {
 	addAsyncUpdateListener(this);
 }
@@ -198,7 +201,7 @@ void AppUpdater::run()
 	}
 }
 
-void AppUpdater::finished(URL::DownloadTask *, bool success)
+void AppUpdater::finished(URL::DownloadTask * task, bool success)
 {
 	if (!success)
 	{ 
@@ -215,6 +218,8 @@ void AppUpdater::finished(URL::DownloadTask *, bool success)
     
 	File f = appDir.getChildFile("update_temp/" + downloadingFileName);
 #endif
+    
+    
 	if (!f.exists())
 	{
 		DBG("File doesn't exist");
@@ -240,6 +245,7 @@ void AppUpdater::finished(URL::DownloadTask *, bool success)
 
 		appFile.moveFileTo(td.getNonexistentChildFile("oldApp", appFile.getFileExtension()));
 
+        
 		DBG("Move to " << appDir.getFullPathName());
 		for (int i = 0; i < zip.getNumEntries(); i++)
 		{
@@ -248,11 +254,11 @@ void AppUpdater::finished(URL::DownloadTask *, bool success)
 			zf.copyFileTo(appDir.getChildFile(zip.getEntry(i)->filename));
 			//DBG("Move result for " << zf.getFileName() << " = " << (int)result);
 		}
+        
 	}
-
-	File appFile = File::getSpecialLocation(File::currentApplicationFile);
-	File appDir = appFile.getParentDirectory();
-	File tempDir = appDir.getChildFile("temp");
+	File curAppFile = File::getSpecialLocation(File::currentApplicationFile);
+	File curAppDir = curAppFile.getParentDirectory();
+	File tempDir = curAppDir.getChildFile("temp");
 	tempDir.deleteRecursively();
 
 #endif
@@ -267,8 +273,11 @@ void AppUpdater::finished(URL::DownloadTask *, bool success)
 
 	if (mmLock.lockWasGained())
 	{
+        
+        DBG("Here");
 		if (updateWindow != nullptr) updateWindow->removeFromDesktop();
 		JUCEApplication::getInstance()->systemRequestedQuit();
+        DBG("Start process");
 		appFile.startAsProcess();
 	}
 	

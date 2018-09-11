@@ -18,15 +18,15 @@ Prop::Prop(StringRef productString, StringRef serial, hid_device * device, PropT
     productString(productString),
 	type(type),
 	serial(serial),
-	device(device),
 	dVid(vid),
 	dPid(pid),
-	dSN(serialNumber),
+    device(device),
+    deviceAckStatus(0),
+    dSN(serialNumber),
 	deviceStatus(NotSet),
 	progression(0),
-	deviceAckStatus(0),
-	queuedNotifier(50),
-	infos("[Not set]")
+	infos("[Not set]"),
+    queuedNotifier(50)
 {
 	
     if(!this->productString.toLowerCase().contains("bootloader"))

@@ -17,7 +17,7 @@ class Firmware
 {
 public:
 	Firmware(MemoryBlock data, int totalBytesToSend, var meta,  String infos, String versionString, float version, int pid, int vid) :
-		data(data), totalBytesToSend(totalBytesToSend), meta(meta), infos(infos), versionString(versionString), version(version), pid(pid), vid(vid) {}
+		data(data), totalBytesToSend(totalBytesToSend), infos(infos), meta(meta),  versionString(versionString), version(version), pid(pid), vid(vid) {}
 
 	MemoryBlock data;
 	int totalBytesToSend;
