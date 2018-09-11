@@ -77,3 +77,5 @@ Chataigne-win-x64-bleedingedge\.exe
 JuceLibraryCode/
 
 FlowtoysUpdater-win-x64\.exe
+
+*.exe

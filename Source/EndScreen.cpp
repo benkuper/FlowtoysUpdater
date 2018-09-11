@@ -14,7 +14,7 @@
 EndScreen::EndScreen() :
 	AppScreen("Complete", COMPLETE),
 	resetBT("Start again"),
-	reconnectBT("Flash other props with same firmware")
+	reconnectBT("Upload same firmware to more props")
 {
 	resetBT.addListener(this);
 	addAndMakeVisible(&resetBT);
@@ -30,7 +30,7 @@ EndScreen::~EndScreen()
 void EndScreen::paint(Graphics & g)
 {
 	g.setColour(Colours::lightgrey);
-	g.drawFittedText("update successful.\ngo forth and find your flow ...", getLocalBounds(), Justification::centred, 3);
+	g.drawFittedText("update successful.\nready to flow ...", getLocalBounds(), Justification::centred, 3);
 }
 
 void EndScreen::resized()
