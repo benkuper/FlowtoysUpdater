@@ -85,7 +85,7 @@ public:
 
 	
 	// Threaded call from CapsuleEngine
-	void flash(MemoryBlock * b, int totalBytesToSend);
+	bool flash(MemoryBlock * b, int totalBytesToSend);
 
 
 	void setProgression(float value);

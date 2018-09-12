@@ -24,6 +24,7 @@ UploadScreen::~UploadScreen()
 void UploadScreen::reset()
 {
 	progression = 0;
+	text = "updating with " + FirmwareManager::getInstance()->selectedFirmware->infos + "\n- do not disconnect until complete -";
 	PropManager::getInstance()->flash();
 }
 
@@ -31,7 +32,7 @@ void UploadScreen::paint(Graphics & g)
 {
 	g.setColour(Colours::lightgrey);
 	Rectangle<int> r = getLocalBounds().withSizeKeepingCentre(300, 40).translated(0, -60);
-	g.drawFittedText("updating with "+ FirmwareManager::getInstance()->selectedFirmware->infos + "\n- do not disconnect until complete -", r , Justification::centred, 5);
+	g.drawFittedText(text, r , Justification::centred, 5);
 	r.translate(0, 60);
 	r.setSize(300, 20);
 	g.fillRoundedRectangle(r.toFloat(), 2);
@@ -52,5 +53,9 @@ void UploadScreen::newMessage(const PropManager::PropManagerEvent & e)
 			progression = e.progress;
 			repaint();
 		}
+	} else if (e.type == PropManager::PropManagerEvent::FLASHING_ERROR)
+	{
+		text = "There were errors during uploading.\nPlease unplug, plug again your prop and try uploading again.";
+		repaint();
 	}
 }

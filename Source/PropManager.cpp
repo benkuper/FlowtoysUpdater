@@ -160,6 +160,7 @@ void PropManager::run()
 		return;
 	}
 
+	bool flashError = false;
 	int i = 0;
 	for (auto &d : props)
 	{
@@ -167,12 +168,14 @@ void PropManager::run()
 		Firmware * f = FirmwareManager::getInstance()->selectedFirmware;
 
 		DBG("Flashing device " << d->infos);
-		d->flash(&f->data, f->totalBytesToSend);
+		bool result = d->flash(&f->data, f->totalBytesToSend);
+		if (!result) flashError = true;
 		i++;
 		sleep(50);
 	}
 
-	queuedNotifier.addMessage(new PropManagerEvent(PropManagerEvent::FLASHING_PROGRESS, 1));
+	if (flashError) queuedNotifier.addMessage(new PropManagerEvent(PropManagerEvent::FLASHING_ERROR));
+	else queuedNotifier.addMessage(new PropManagerEvent(PropManagerEvent::FLASHING_PROGRESS, 1));
 	sleep(500);
 }
 

@@ -22,6 +22,7 @@ public:
 	UploadScreen();
 	~UploadScreen();
 
+	String text;
 	float progression;
 	void reset() override;
 

@@ -45,7 +45,6 @@ public:
 
 	PropType getTypeForProductID(int productID);
 
-
 	void newMessage(const Prop::PropEvent &e) override;
 
 	void flash();
@@ -59,7 +58,7 @@ public:
 	class PropManagerEvent
 	{
 	public:
-		enum Type { PROPS_CHANGED, FLASHING_PROGRESS };
+		enum Type { PROPS_CHANGED, FLASHING_PROGRESS, FLASHING_ERROR };
 		PropManagerEvent(Type type) : type(type) {}
 		PropManagerEvent(Type type, float progress) : type(type), progress(progress) {}
 

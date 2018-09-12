@@ -218,7 +218,7 @@ MemoryInputStream * Prop::readResponse()
 	}
 }
 
-void Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
+bool Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
 {
 	jassert(!MessageManager::getInstance()->isThisTheMessageThread());
 
@@ -263,7 +263,7 @@ void Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
 		{
 			DBG("ERROR ! " << statusRawMessage);
 			//flashState->setValueWithData(ERROR);
-			return;
+			return false;
 		} else if (deviceStatus == EraseBusy)
 		{
 			//Erasing..
@@ -301,7 +301,8 @@ void Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
 		{
 			DBG("ERROR ! " << statusRawMessage);
 			//flashState->setValueWithData(ERROR);
-			return;
+			return false;
+
 		} else if (deviceStatus == ProgramIdle && deviceAckStatus < totalBytesToSend)
 		{
 			//DBG("Sending with packet #" << currentPacket<<", offset : " << currentDataOffset << " (ackStatus : " << deviceAckStatus << ")");
@@ -336,6 +337,8 @@ void Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
     sendAppReset(Subject::App);
 	//flashState->setValueWithData(SUCCESS);
 	setProgression(1);
+
+	return true;
 }
 
 void Prop::setProgression(float value)
