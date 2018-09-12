@@ -16,7 +16,7 @@ juce_ImplementSingleton(PropManager)
 
 PropManager::PropManager() :
 	Thread("Props"),
-	shouldCheck(false),
+	//shouldCheck(false),
 	selectedType(NOTSET),
     queuedNotifier(100)
 {
@@ -37,7 +37,7 @@ void PropManager::clear()
 void PropManager::checkProps()
 {
 	if (isFlashing()) return;
-	if (!shouldCheck) return;
+	//if (!shouldCheck) return;
 
 	bool changed = false;
 	Array<String> foundSerials;
@@ -141,13 +141,13 @@ void PropManager::setSelectedType(PropType t)
 {
 	props.clear(); 
 	selectedType = t;
-	shouldCheck = true;
+	//shouldCheck = true;
 }
 
 void PropManager::reset()
 {
 	props.clear();
-	shouldCheck = false;
+	//shouldCheck = false;
 }
 
 void PropManager::run()

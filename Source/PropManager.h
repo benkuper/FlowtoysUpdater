@@ -28,7 +28,7 @@ public:
 	OwnedArray<Prop> props;
 
 	//Settings from user choices
-	bool shouldCheck;
+	//bool shouldCheck;
 	PropType selectedType;
 	
 	bool isFlashing();
