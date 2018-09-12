@@ -5,7 +5,7 @@
 
 #define ApplicationName 'FlowtoysUpdater'
 #define ApplicationVersion GetStringFileInfo('Binaries/Release/App/FlowtoysUpdater.exe',"ProductVersion")
-
+                             
 [Setup]
 AppName={#ApplicationName}
 AppId={#ApplicationName}
@@ -29,7 +29,7 @@ SetupWindowTitle={#ApplicationName} {#ApplicationVersion} Setup
 
 [Files]
 Source: "Binaries/Release/App/{#ApplicationName}.exe"; DestDir: "{app}"
-Source: "Binaries/Release/App/*.dll"; DestDir: "{app}"
+;Source: "Binaries/Release/App/*.dll"; DestDir: "{app}"
 
 [Icons]
 Name: "{group}\{#ApplicationName}"; Filename: "{app}\{#ApplicationName}.exe"
