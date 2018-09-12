@@ -37,7 +37,7 @@ void EndScreen::resized()
 {
 	Rectangle<int> r = getLocalBounds().removeFromBottom(100).withSizeKeepingCentre(100, 20).expanded(10);
 	resetBT.setBounds(r.translated(-100, 0));
-	reconnectBT.setBounds(r.translated(100,0));
+	reconnectBT.setBounds(r.translated(100,0).expanded(30,0));
 }
 
 void EndScreen::buttonClicked(Button * b)
