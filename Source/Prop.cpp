@@ -127,11 +127,7 @@ void Prop::sendGetVersion(Subject subject)
 		if (subject == App) appActive = result->readByte() == 1;
 		else bootloaderActive = result->readByte() == 1;
         
-        /*
-		String sub = "Subject " + String(subject) + " : ";
-		for (int i = 0; i<2; i++) sub += String(result->readByte()) + ", "; //2 useless bytes
-        DBG(s);
-        */
+		for (int i = 0; i < 2; i++) result->readByte(); //2 bytes padding
 
 		int _vid = result->readShort();
 		int _pid = result->readShort();
@@ -334,7 +330,7 @@ bool Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
 	}
 
 	DBG("Flashing done !");
-    sendAppReset(Subject::App);
+    sendAppReset(Subject::App); 
 	//flashState->setValueWithData(SUCCESS);
 	setProgression(1);
 
