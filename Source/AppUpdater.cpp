@@ -258,15 +258,23 @@ void AppUpdater::finished(URL::DownloadTask * task, bool success)
 	}
 	File curAppFile = File::getSpecialLocation(File::currentApplicationFile);
 	File curAppDir = curAppFile.getParentDirectory();
-	File tempDir = curAppDir.getChildFile("temp");
+	File tempDir = curAppDir.getChildFile("update_temp");
 	tempDir.deleteRecursively();
+    
+    #if JUCE_MAC
+    appFile = File::getSpecialLocation(File::currentApplicationFile).getParentDirectory().getChildFile(ProjectInfo::projectName+String(".app"));
+        File af = appFile.getChildFile ("Contents")
+        .getChildFile ("MacOS")
+        .getChildFile (ProjectInfo::projectName);
+    
+        af.setExecutePermission (true);
+        chmod(af.getFullPathName().toUTF8(), S_IRWXO | S_IRWXU | S_IRWXG);
+        DBG(af.getFullPathName());
+    #endif
+    
 
 #endif
     
-#if JUCE_MAC
-	chmod(File::getSpecialLocation(File::currentExecutableFile).getFullPathName().toUTF8(), S_IRWXO | S_IRWXU | S_IRWXG);
-#endif
-
 	queuedNotifier.addMessage(new AppUpdateEvent(AppUpdateEvent::UPDATE_FINISHED, f));
 
 	MessageManagerLock mmLock;
@@ -276,9 +284,14 @@ void AppUpdater::finished(URL::DownloadTask * task, bool success)
         
         DBG("Here");
 		if (updateWindow != nullptr) updateWindow->removeFromDesktop();
-		JUCEApplication::getInstance()->systemRequestedQuit();
-        DBG("Start process");
-		appFile.startAsProcess();
+    
+        
+        DBG("Quit");
+        JUCEApplication::quit();
+       
+        bool result = appFile.startAsProcess();
+         DBG("Start process " << (int)result);
+        
 	}
 	
 
