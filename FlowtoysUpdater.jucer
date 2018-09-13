@@ -78,13 +78,6 @@
         <MODULEPATH id="juce_data_structures" path="../../../../../Softwares/JUCE/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../../../../../Softwares/JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_video" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_opengl" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../../../../Softwares/JUCE/modules"/>
       </MODULEPATHS>
     </VS2017>
     <XCODE_MAC targetFolder="Builds/MacOSX" extraFrameworks="IOKit" smallIcon="kGgGAD"
@@ -102,13 +95,6 @@
         <MODULEPATH id="juce_data_structures" path="../../../../../Softwares/JUCE/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../../../../../Softwares/JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_video" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_opengl" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../../../../Softwares/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile" smallIcon="kGgGAD" bigIcon="kGgGAD">
@@ -123,30 +109,16 @@
         <MODULEPATH id="juce_data_structures" path="../../../../../Softwares/JUCE/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../../../../../Softwares/JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_video" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_opengl" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../../../../Softwares/JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
   </EXPORTFORMATS>
   <MODULES>
-    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_video" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
   <LIVE_SETTINGS>
     <WINDOWS/>
