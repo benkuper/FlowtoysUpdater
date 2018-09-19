@@ -53,51 +53,84 @@ void FirmwareManager::loadFirmwares()
 	DBG("Found " << files.size() << " local files");
 	for (auto &f : files)
 	{
-        if(f.getSize() == 0)
-        {
-            DBG("Wrong file size, removing file");
-            f.deleteFile();
-            continue;
-        }
-		ZipFile zip(f);
-		const ZipFile::ZipEntry * meta = zip.getEntry("meta");
-		const ZipFile::ZipEntry * data = zip.getEntry("data");
-
-
-		//data
-		ScopedPointer<InputStream> dataStream = zip.createStreamForEntry(*data);
-		int numBytesToSend = (int)dataStream->getTotalLength();
-		float numDataPackets = (float)(ceilf(numBytesToSend*1.0f / DATA_PACKET_MAX_LENGTH));
-		int totalBytesToSend = (int)(numDataPackets * DATA_PACKET_MAX_LENGTH);
-		DBG("File size : " << numBytesToSend << ", split into " << numDataPackets << " =  " << totalBytesToSend << " total bytes");
-		MemoryBlock fwData;
-		dataStream->readIntoMemoryBlock(fwData);
-
-
-		ScopedPointer<InputStream> metaStream = zip.createStreamForEntry(*meta);
-		var fwMeta = JSON::fromString(metaStream->readEntireStreamAsString());
-
-		if (!fwMeta.isObject())
-		{
-			DBG("Problem with meta here");
-			return;
-		}
-
-		int targetVID = (int)fwMeta.getProperty("usb_vid", 0);
-		int targetPID = (int)fwMeta.getProperty("usb_pid", 0);
-		uint16 fwRev = (int)fwMeta.getProperty("fw_rev", 0);
-		String targetVersion = String(fwRev >> 8) + "." + String::formatted("%02d", fwRev & 0xff);
-		String fwDate = Time((int64)((int64)fwMeta.getDynamicObject()->getProperty("fw_date")) * 1000).toString(true, false);
-		String gitRev = fwMeta.getProperty("git_rev", "[not set]");
-		String fwIdent = fwMeta.getProperty("fw_ident", "[not set]");
-
-		firmwares.add(new Firmware(fwData, totalBytesToSend, fwMeta, fwIdent +", version " + targetVersion + " (" + fwDate+ ")",targetVersion, targetVersion.getFloatValue(), targetPID, targetVID));
+		Firmware * fw = getFirmwareForFile(f);
+		if(fw != nullptr) firmwares.add(fw);
 	}
 
 	firmwares.sort(comparator, true);
 
 	DBG(firmwares.size() << " loaded.");
 	queuedNotifier.addMessage(new FirmwareManagerEvent(FirmwareManagerEvent::FIRMWARE_LOADED));
+}
+
+Firmware * FirmwareManager::getFirmwareForFile(File f)
+{
+	if (f.getSize() == 0)
+	{
+		DBG("Wrong file size, removing file");
+		f.deleteFile();
+		return nullptr;
+	}
+
+	ZipFile zip(f);
+	const ZipFile::ZipEntry * meta = zip.getEntry("meta");
+	const ZipFile::ZipEntry * data = zip.getEntry("data");
+
+
+	//data
+	ScopedPointer<InputStream> dataStream = zip.createStreamForEntry(*data);
+	int numBytesToSend = (int)dataStream->getTotalLength();
+	float numDataPackets = (float)(ceilf(numBytesToSend*1.0f / DATA_PACKET_MAX_LENGTH));
+	int totalBytesToSend = (int)(numDataPackets * DATA_PACKET_MAX_LENGTH);
+	DBG("File size : " << numBytesToSend << ", split into " << numDataPackets << " =  " << totalBytesToSend << " total bytes");
+	MemoryBlock fwData;
+	dataStream->readIntoMemoryBlock(fwData);
+
+
+	ScopedPointer<InputStream> metaStream = zip.createStreamForEntry(*meta);
+	var fwMeta = JSON::fromString(metaStream->readEntireStreamAsString());
+
+	if (!fwMeta.isObject())
+	{
+		DBG("Problem with meta here");
+		return nullptr;
+	}
+
+	int targetVID = (int)fwMeta.getProperty("usb_vid", 0);
+	int targetPID = (int)fwMeta.getProperty("usb_pid", 0);
+	uint16 fwRev = (int)fwMeta.getProperty("fw_rev", 0);
+	String targetVersion = String(fwRev >> 8) + "." + String::formatted("%02d", fwRev & 0xff);
+	String fwDate = Time((int64)((int64)fwMeta.getDynamicObject()->getProperty("fw_date")) * 1000).toString(true, false);
+	String gitRev = fwMeta.getProperty("git_rev", "[not set]");
+	String fwIdent = fwMeta.getProperty("fw_ident", "[not set]");
+
+	Firmware * fw = new Firmware(fwData, totalBytesToSend, fwMeta, fwIdent + ", version " + targetVersion + " (" + fwDate + ")", targetVersion, targetVersion.getFloatValue(), targetPID, targetVID);
+	DBG(fwIdentStrings->indexOf(fwIdent) << " <> " << (int)(fwIdent == "capsule"));
+	
+	for (int i = 0; i < TYPE_MAX; i++)
+	{
+		if (fwIdentStrings[i] == fwIdent) fw->type = (PropType)i;
+	}
+
+	return fw;
+}
+
+bool FirmwareManager::setLocalFirmware(File f, PropType expectedType)
+{
+	Firmware * fw = getFirmwareForFile(f);
+	if (fw == nullptr)
+	{
+		delete fw;
+		return false;
+	}
+	if (fw->type != expectedType)
+	{
+		delete fw;
+		return false;
+	}
+
+	localFirmware = fw;
+	return fw != nullptr;
 }
 
 bool FirmwareManager::firmwaresAreLoaded()
@@ -115,6 +148,8 @@ Array<Firmware *> FirmwareManager::getFirmwaresForType(PropType type)
 	{
 		if (f->pid == targetPID) result.add(f);
 	}
+
+	if (localFirmware != nullptr && localFirmware->type == type) result.add(localFirmware);
 
 	return result;
 }

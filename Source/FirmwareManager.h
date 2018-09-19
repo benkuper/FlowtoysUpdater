@@ -28,6 +28,7 @@ public:
 	float version;
 	int pid;
 	int vid;
+	PropType type;
 };
 
 class FirmwareComparator
@@ -58,9 +59,15 @@ public:
 
 	Firmware * selectedFirmware;
 
+
+	ScopedPointer<Firmware> localFirmware;
+
 	void initLoad();
 	void clearFirmwares();
 	void loadFirmwares();
+
+	Firmware * getFirmwareForFile(File f);
+	bool setLocalFirmware(File f, PropType expectedType);
 
 	int downloadedFirmwares;
 	int onlineFirmwares;

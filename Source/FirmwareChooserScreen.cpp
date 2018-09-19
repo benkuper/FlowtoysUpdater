@@ -13,11 +13,15 @@
 
 FirmwareChooserScreen::FirmwareChooserScreen() :
 	AppScreen("Firmware", FW_CHOOSE),
-	selectBT("Select")
+	selectBT("Select"),
+	chooseFileBT("Select local file")
 {
 	addChildComponent(selectBT);
 	addChildComponent(fwChooser);
+	addAndMakeVisible(chooseFileBT);
+
 	selectBT.addListener(this);
+	chooseFileBT.addListener(this);
 	fwChooser.addListener(this);
 
 	FirmwareManager::getInstance()->addAsyncManagerListener(this);
@@ -38,15 +42,21 @@ void FirmwareChooserScreen::updateVisibility()
 	fwList = FirmwareManager::getInstance()->getFirmwaresForType(PropManager::getInstance()->selectedType);
 
 	fwChooser.addItem("auto update", -1);
+	int indexToSelect = -1;
 	for (int i = 0; i < fwList.size(); i++)
 	{
-		fwChooser.addItem(fwList[i]->infos, i + 1);
+		bool isLocal = FirmwareManager::getInstance()->localFirmware == fwList[i];
+		String label = fwList[i]->infos;
+		if (isLocal) label += " (local)";
+		fwChooser.addItem(label, i + 1);
+		if (isLocal) indexToSelect = i + 1;
+		
 	}
 
 	selectBT.setVisible(v);
 	fwChooser.setVisible(v);
 	selectBT.setEnabled(fwChooser.getNumItems() > 0);
-
+	if (indexToSelect != -1) fwChooser.setSelectedItemIndex(indexToSelect);
 	repaint();
 }
 
@@ -75,8 +85,6 @@ void FirmwareChooserScreen::reset()
 {
 	if (!FirmwareManager::getInstance()->firmwaresAreLoaded() || FirmwareManager::getInstance()->errored) FirmwareManager::getInstance()->initLoad();
 	
-	
-
 	updateVisibility();
 }
 
@@ -84,9 +92,9 @@ void FirmwareChooserScreen::resized()
 {
 	Rectangle<int> r = getLocalBounds();
 	Rectangle<int> br = r.removeFromBottom(100);
-	selectBT.setBounds(br.withSizeKeepingCentre(100, 40));
+	selectBT.setBounds(br.withSizeKeepingCentre(100, 40).translated(0, -50));
+	chooseFileBT.setBounds(br.withSizeKeepingCentre(120, 40));
 	fwChooser.setBounds(r.withSizeKeepingCentre(300, 30));
-	
 }
 
 void FirmwareChooserScreen::newMessage(const FirmwareManager::FirmwareManagerEvent & e)
@@ -105,5 +113,19 @@ void FirmwareChooserScreen::buttonClicked(Button * b)
 		int index = fwChooser.getSelectedId();
 		FirmwareManager::getInstance()->selectedFirmware = (index <= 0 ? fwList[0] : fwList[index-1]);
 		screenListeners.call(&ScreenListener::screenFinish, this);
+	} else if (b == &chooseFileBT)
+	{
+		FileChooser fc("Choose a firmware file",File(),"*.fwimg");
+		bool result = fc.browseForFileToOpen();
+		if (result)
+		{
+			File f = fc.getResult();
+			bool result =FirmwareManager::getInstance()->setLocalFirmware(f, PropManager::getInstance()->selectedType);
+			if (!result)
+			{
+				AlertWindow::showMessageBox(AlertWindow::WarningIcon, "Bad file", "The file you chose is either corrupted or not a firmware for " + displayNames[PropManager::getInstance()->selectedType] + ".", "OK");
+			}
+			updateVisibility();
+		}
 	}
 }

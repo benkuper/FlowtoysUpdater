@@ -27,6 +27,7 @@ public:
 	ComboBox fwChooser;
 
 	TextButton selectBT;
+	TextButton chooseFileBT;
 
 	void updateVisibility();
 
@@ -39,8 +40,8 @@ public:
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FirmwareChooserScreen)
 
-		// Inherited via Listener
-		virtual void comboBoxChanged(ComboBox * comboBoxThatHasChanged) override;
+	// Inherited via Listener
+	virtual void comboBoxChanged(ComboBox * comboBoxThatHasChanged) override;
 
 	// Inherited via Listener
 	virtual void buttonClicked(Button *) override;
