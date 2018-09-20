@@ -23,12 +23,14 @@ ArchitecturesInstallIn64BitMode=x64
 OutputDir=/
 OutputBaseFilename={#ApplicationName}-win-x64
 SetupIconFile=setup.ico
+ 
 
 [Messages]
 SetupWindowTitle={#ApplicationName} {#ApplicationVersion} Setup
 
 [Files]
 Source: "Binaries/Release/App/{#ApplicationName}.exe"; DestDir: "{app}"
+Source: "redist\vcredist_x64.exe"; DestDir: "{tmp}"; 
 ;Source: "Binaries/Release/App/*.dll"; DestDir: "{app}"
 
 [Icons]
@@ -36,6 +38,7 @@ Name: "{group}\{#ApplicationName}"; Filename: "{app}\{#ApplicationName}.exe"
 
 [Run]
 Filename: "{app}\{#ApplicationName}.exe"; Description: "{cm:LaunchProgram,{#ApplicationName}.exe}"; Flags: nowait postinstall skipifsilent
+Filename: "{tmp}\vcredist_x64.exe"; Parameters: "/install /passive /norestart"; Check: not VCinstalled64
 
 [Code]
 function GetUninstallString(): String;
@@ -95,3 +98,28 @@ begin
     end;
   end;
 end;
+
+
+//////////////////////////////////////////////////////////////////////
+function VCinstalled64: Boolean;
+var
+installed: Cardinal;
+key: String;
+begin
+  Result := False;
+  key := 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64';
+  //if DirExists 
+ //('Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64') 
+  //  then begin 
+      if RegQueryDWordValue(HKEY_LOCAL_MACHINE, key, 'Installed', installed) 
+      then begin
+          Log('VC is installed ? ' + IntToStr(installed));  
+          if installed = 1 then begin
+            Result := True;
+          end;
+      end;
+  //end    
+  //else begin
+  //  Log('VC directory not found ');
+ // end;
+ end;
