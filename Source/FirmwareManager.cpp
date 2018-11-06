@@ -98,7 +98,7 @@ Firmware * FirmwareManager::getFirmwareForFile(File f)
 
 	int targetVID = (int)fwMeta.getProperty("usb_vid", 0);
 	int targetPID = (int)fwMeta.getProperty("usb_pid", 0);
-	uint16 fwRev = (int)fwMeta.getProperty("fw_rev", 0);
+	uint16 fwRev = (uint16)(int)fwMeta.getProperty("fw_rev", 0);
 	String targetVersion = String(fwRev >> 8) + "." + String::formatted("%02d", fwRev & 0xff);
 	String fwDate = Time((int64)((int64)fwMeta.getDynamicObject()->getProperty("fw_date")) * 1000).toString(true, false);
 	String gitRev = fwMeta.getProperty("git_rev", "[not set]");
@@ -109,7 +109,7 @@ Firmware * FirmwareManager::getFirmwareForFile(File f)
 	
 	for (int i = 0; i < TYPE_MAX; i++)
 	{
-		if (fwIdentStrings[i] == fwIdent) fw->type = (PropType)i;
+		if (productIds[i] == targetPID) fw->type = (PropType)i;
 	}
 
 	return fw;
