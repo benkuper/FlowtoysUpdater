@@ -86,6 +86,8 @@ public:
 			setResizable(true, true);
             centreWithSize (getWidth(), getHeight());
             setVisible (true);
+
+			toFront(true);
         }
 
         void closeButtonPressed() override
