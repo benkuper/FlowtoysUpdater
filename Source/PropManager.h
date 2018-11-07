@@ -47,6 +47,8 @@ public:
 
 	void newMessage(const Prop::PropEvent &e) override;
 
+	void resetPropToBootloader(hid_device_info * deviceInfo);
+
 	void flash();
 
 	// Inherited via Thread

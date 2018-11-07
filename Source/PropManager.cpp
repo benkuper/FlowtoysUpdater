@@ -58,10 +58,17 @@ void PropManager::checkProps()
 			//already opened, do nothing;
         }else if(!String(dInfo->product_string).toLowerCase().contains("bootloader"))
         {
-            DBG("App mode, not connecting");
-            //sendAppReset(Subject::Bootloader);
-            //sendGetStatus();
-            //return;
+			PropType t = getTypeForProductID(dInfo->product_id);
+			if (t == CLUB) //t
+			{
+				DBG("App mode and device is club, try put to bootloader");
+				resetPropToBootloader(dInfo);
+
+			} else
+			{
+				DBG("App mode and device is not club, not connecting");
+			}
+          
         }else
 		{
 			openDevice(dInfo);
@@ -210,6 +217,25 @@ void PropManager::newMessage(const Prop::PropEvent & e)
 
 		DBG("Total progression " << totalProgression);
 		queuedNotifier.addMessage(new PropManagerEvent(PropManagerEvent::FLASHING_PROGRESS,  totalProgression));
+	}
+}
+
+void PropManager::resetPropToBootloader(hid_device_info * deviceInfo)
+{
+	hid_device * d = hid_open(deviceInfo->vendor_id, deviceInfo->product_id, deviceInfo->serial_number);
+	if (d != nullptr)
+	{
+		DBG("Reset device to bootloader");
+		MemoryOutputStream data;
+		data.writeByte(0);
+		data.writeInt(Prop::Command::AppReset);
+		data.writeInt(Prop::Subject::Bootloader);
+		while (data.getDataSize() < PACKET_SIZE + 1) data.writeByte(0); //prepend report id
+
+		hid_write(d, (const unsigned char *)data.getData(), data.getDataSize());
+	} else
+	{
+		DBG("Could not open device");
 	}
 }
 

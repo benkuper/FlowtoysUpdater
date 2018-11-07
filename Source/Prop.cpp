@@ -249,6 +249,9 @@ bool Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
 
 
 	DBG("Erasing...");
+
+	int sizeToErase = type == CAPSULE ? 51200 : 113664; //Size of the data to erase varies depending on the prop type
+
 	int index = 0;
 	while (!thread->threadShouldExit())
 	{
@@ -276,7 +279,7 @@ bool Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
 			MessageManagerLock mmLock;
 			if (mmLock.lockWasGained())
 			{
-				setProgression(deviceAckStatus*.5f / 51200);
+				setProgression(jmin(deviceAckStatus*.5f / sizeToErase, .5f));
 				//progression->queuedNotifier.triggerAsyncUpdate();
 				thread->sleep(1);
 			}
