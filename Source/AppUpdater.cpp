@@ -149,7 +149,8 @@ void AppUpdater::run()
 
 			if (versionIsNewerThan(version, ProjectInfo::versionString))
 			{
-				String msg = "A new version of "+ String(ProjectInfo::projectName) +" is available : " + version + ", do you want to update the app ?\nYou can also deactivate updates in the preferences.";
+				String msg = "A new version of "+ String(ProjectInfo::projectName) +" is available : " + version + ", do you want to update the app ?\nYou can also deactivate updates in the preferences.\n \
+If the auto-update fails, you can always download and replace it manually.";
 
 				Array<var> * changelog = data.getProperty("changelog", var()).getArray();
 				String changelogString = "Changes since your version :\n\n";
@@ -206,7 +207,8 @@ void AppUpdater::finished(URL::DownloadTask * task, bool success)
 	if (!success)
 	{ 
 		DBG("Error while downloading " + downloadingFileName + ",\ntry downloading it directly from the website.\nError code : " + String(task->statusCode()));
-		queuedNotifier.addMessage(new AppUpdateEvent(AppUpdateEvent::DOWNLOAD_ERROR)); return;
+		queuedNotifier.addMessage(new AppUpdateEvent(AppUpdateEvent::DOWNLOAD_ERROR));
+		return;
 	}
 
 
@@ -223,12 +225,14 @@ void AppUpdater::finished(URL::DownloadTask * task, bool success)
 	if (!f.exists())
 	{
 		DBG("File doesn't exist");
+		queuedNotifier.addMessage(new AppUpdateEvent(AppUpdateEvent::DOWNLOAD_ERROR));
 		return;
 	}
 
 	if (f.getSize() < 1000000) //if file is less than 1Mo, got a problem
 	{
 		DBG("Wrong file size, try downloading it directly from the website");
+		queuedNotifier.addMessage(new AppUpdateEvent(AppUpdateEvent::DOWNLOAD_ERROR));
 		return;
 	}
 
@@ -311,7 +315,7 @@ void AppUpdater::newMessage(const AppUpdateEvent & e)
 		showDialog(e.title, e.msg,e.changelog);
 		break;
 
-	case AppUpdateEvent::DOWNLOAD_ERROR:
+	//case AppUpdateEvent::DOWNLOAD_ERROR:
 	case AppUpdateEvent::UPDATE_FINISHED:
 		updateWindow->getTopLevelComponent()->exitModalState(0);
 		break;
@@ -322,14 +326,19 @@ void AppUpdater::newMessage(const AppUpdateEvent & e)
 }
 
 UpdateDialogWindow::UpdateDialogWindow(const String & msg, const String & changelog) :
-	okButton("OK"),
-	cancelButton("Cancel")
+	okButton("Update"),
+	cancelButton("Cancel"),
+	manualDownload("Download Manually"),
+	errorMode(false)
 {
 	addAndMakeVisible(&msgLabel);
 	addAndMakeVisible(&changelogLabel);
+	addAndMakeVisible(&statusLabel);
 
 	msgLabel.setColour(msgLabel.textColourId, Colours::lightgrey);
 	msgLabel.setText(msg, dontSendNotification);
+	statusLabel.setColour(statusLabel.textColourId, Colours::lightgrey);
+	statusLabel.setText("Click \"Update\" to continue...", dontSendNotification);
 
 	changelogLabel.setMultiLine(true);
 	changelogLabel.setColour(changelogLabel.backgroundColourId, Colours::darkgrey.darker());
@@ -340,11 +349,20 @@ UpdateDialogWindow::UpdateDialogWindow(const String & msg, const String & change
 
 	addAndMakeVisible(&okButton);
 	addAndMakeVisible(&cancelButton);
+	addAndMakeVisible(&manualDownload);
 
 	okButton.addListener(this);
 	cancelButton.addListener(this);
+	manualDownload.addListener(this);
 
-	setSize(400,300);
+	setSize(500,400);
+
+	AppUpdater::getInstance()->addAsyncUpdateListener(this);
+}
+
+UpdateDialogWindow::~UpdateDialogWindow() 
+{
+	if(AppUpdater::getInstanceWithoutCreating() != nullptr) AppUpdater::getInstance()->removeAsyncUpdateListener(this);
 }
 
 void UpdateDialogWindow::paint(Graphics & g)
@@ -353,39 +371,69 @@ void UpdateDialogWindow::paint(Graphics & g)
 
 	g.setColour(Colour(0xff111111));
 	g.fillRoundedRectangle(progressionRect.toFloat(),2);
-	g.setColour(Colours::limegreen);
-	g.fillRoundedRectangle(progressionRect.toFloat().withWidth(progressionRect.getWidth()*AppUpdater::getInstance()->progression), 2);
+	g.setColour(errorMode?Colours::orangered:Colours::limegreen);
+	g.fillRoundedRectangle(progressionRect.toFloat().withWidth(progressionRect.getWidth()*(errorMode ? 1 : AppUpdater::getInstance()->progression)), 2);
 }
 
 void UpdateDialogWindow::resized()
 {
 	Rectangle<int> r = getLocalBounds().reduced(10);
 	Rectangle<int> br = r.removeFromBottom(20);
-	r.removeFromBottom(10);
+	cancelButton.setBounds(br.removeFromRight(100));
+	br.removeFromRight(10);
+	okButton.setBounds(br.removeFromRight(100));
+	br.removeFromRight(10);
+	manualDownload.setBounds(br.removeFromRight(150));
 
+	r.removeFromBottom(10);	
+	
 	progressionRect = r.removeFromBottom(8);
-	r.removeFromBottom(10);
+	r.removeFromBottom(2);
 
+	statusLabel.setBounds(r.removeFromBottom(16));
+	r.removeFromBottom(30);
 
 	msgLabel.setBounds(r.removeFromTop(100));
 	r.removeFromTop(10);
 	changelogLabel.setBounds(r);
-
-	cancelButton.setBounds(br.removeFromRight(100));
-	br.removeFromRight(10);
-	okButton.setBounds(br.removeFromRight(100));
+	
 }
 
 void UpdateDialogWindow::newMessage(const AppUpdateEvent & e)
 {
-	if (e.type == AppUpdateEvent::DOWNLOAD_PROGRESS) repaint();
+	switch (e.type)
+	{
+	case AppUpdateEvent::DOWNLOAD_STARTED:
+		statusLabel.setText("Downloading update...", dontSendNotification);
+		break;
+
+	case AppUpdateEvent::DOWNLOAD_PROGRESS:
+		repaint();
+		break;
+	case AppUpdateEvent::DOWNLOAD_ERROR:
+	{
+		statusLabel.setText("There was a problem with the auto-update, please download the file manually.", dontSendNotification);
+		statusLabel.setColour(statusLabel.textColourId, Colours::orangered);
+		errorMode = true;
+		repaint();
+		okButton.setEnabled(false);
+	}
+	break;
+	}
 }
 
 void UpdateDialogWindow::buttonClicked(Button * b)
 {
-	if (b == &okButton) AppUpdater::getInstance()->downloadUpdate();
-	else if (b == &cancelButton)
+	if (b == &okButton)
 	{
+		AppUpdater::getInstance()->downloadUpdate();
+	} else if (b == &cancelButton)
+	{
+		getTopLevelComponent()->exitModalState(0);
+	} else if (b == &manualDownload)
+	{
+		URL downloadURL = URL(AppUpdater::getInstance()->downloadURLBase + AppUpdater::getInstance()->downloadingFileName);
+		downloadURL.launchInDefaultBrowser();
 		getTopLevelComponent()->exitModalState(0);
 	}
 }

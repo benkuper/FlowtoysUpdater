@@ -41,14 +41,18 @@ class UpdateDialogWindow :
 {
 public:
 	UpdateDialogWindow(const String &msg, const String &changelog);
-	~UpdateDialogWindow() {}
+	~UpdateDialogWindow();
 	Label msgLabel;
 	TextEditor changelogLabel;
+	Label statusLabel;
 
 	TextButton okButton;
 	TextButton cancelButton;
+	TextButton manualDownload;
 
 	Rectangle<int> progressionRect;
+
+	bool errorMode;
 
 	void paint(Graphics &g) override;
 	void resized() override;
