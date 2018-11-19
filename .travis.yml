@@ -106,7 +106,7 @@ after_success:
     cp build/FlowtoysUpdater FlowtoysUpdater.AppDir;
     ./appimagetool-x86_64.AppImage FlowtoysUpdater.AppDir FlowtoysUpdater-linux-x64-$SUFFIX.AppImage;
     echo 'Uploading $SUFFIX ...';
-    curl --verbose --progress-bar -T ./FlowtoysUpdater-linux-x64-$SUFFIX.AppImage -u "$FTP_USER:$FTP_PASSWORD" ftp://flow-toys.com/app/ 
+    curl --verbose --progress-bar -T ./FlowtoysUpdater-linux-x64-$SUFFIX.AppImage -u "$FTP_USER:$FTP_PASSWORD" ftp://flow-toys.com/app/;""
   else
     cd /Users/travis/build/benkuper/FlowtoysUpdater/Builds/MacOSX/build/$MAKECONF
     ls
