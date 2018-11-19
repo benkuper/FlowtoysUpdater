@@ -116,9 +116,9 @@
     <VS2017 targetFolder="Builds/VisualStudio2017_CI" externalLibraries="Setupapi.lib&#10;hid.lib&#10;hidapi_static.lib">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" headerPath="../../External/hidapi/include"
-                       libraryPath="../../External/hidapi/lib/win/x64" binaryPath="Binaries/CI/Debug"/>
+                       libraryPath="../../External/hidapi/lib/win/x64" binaryPath="Binaries/CI"/>
         <CONFIGURATION isDebug="0" name="Release" headerPath="../../External/hidapi/include"
-                       libraryPath="../../External/hidapi/lib/win/x64" binaryPath="Binaries/CI/Release"/>
+                       libraryPath="../../External/hidapi/lib/win/x64" binaryPath="Binaries/CI"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="../JUCE/modules"/>
