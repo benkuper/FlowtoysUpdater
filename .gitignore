@@ -53,19 +53,10 @@ profile
 **/Builds/AndroidStudio
 doxygen/doc
 extras/Projucer/JUCECompileEngine.dylib
-Builds/VisualStudio2015/Flap.vcxproj
-Builds/VisualStudio2015/Flap.vcxproj.filters
-Builds/VisualStudio2015/icon.ico
-Builds/VisualStudio2015/resources.rc
-Builds/VisualStudio2015/Flap.sln
-Builds/VisualStudio2015/
 Binaries/App/Chataigne-x64_Debug.exe
 Binaries/
-Builds
 travis_enc.txt
 site/
-
-Builds/CodeBlocksLinux/Chataigne\.cbp
 
 Builds/VisualStudio2017/\.vs/
 

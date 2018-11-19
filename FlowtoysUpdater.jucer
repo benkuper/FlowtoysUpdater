@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="hVyD2E" name="FlowtoysUpdater" projectType="guiapp" jucerVersion="5.4.0"
+<JUCERPROJECT id="hVyD2E" name="FlowtoysUpdater" projectType="guiapp" jucerVersion="5.4.1"
               bundleIdentifier="com.benkuper.flowtoysupdater" version="1.0.9">
   <MAINGROUP id="dV0bQz" name="FlowtoysUpdater">
     <GROUP id="{3E48F26E-9168-5801-2C1A-DC5932568907}" name="Source">
@@ -72,12 +72,12 @@
                        libraryPath="../../External/hidapi/lib/win/x64" binaryPath="Binaries/Release"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../../../../Softwares/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="D:/Softwares\JUCE\modules"/>
+        <MODULEPATH id="juce_events" path="D:/Softwares\JUCE\modules"/>
+        <MODULEPATH id="juce_graphics" path="D:/Softwares\JUCE\modules"/>
+        <MODULEPATH id="juce_data_structures" path="D:/Softwares\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="D:/Softwares\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_extra" path="D:/Softwares\JUCE\modules"/>
       </MODULEPATHS>
     </VS2017>
     <XCODE_MAC targetFolder="Builds/MacOSX" extraFrameworks="IOKit" smallIcon="kGgGAD"
@@ -89,36 +89,53 @@
                        osxCompatibility="10.7 SDK"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../../../../Softwares/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="~/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <LINUX_MAKE targetFolder="Builds/LinuxMakefile" smallIcon="kGgGAD" bigIcon="kGgGAD">
+    <LINUX_MAKE targetFolder="Builds/LinuxMakefile" smallIcon="kGgGAD" bigIcon="kGgGAD"
+                extraLinkerFlags="-Wl,-rpath,&quot;lib&quot;">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" headerPath="../../External/hidapi/include"/>
         <CONFIGURATION isDebug="0" name="Release" headerPath="../../External/hidapi/include"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../../../../Softwares/JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../../../../Softwares/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="~/JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
+    <VS2017 targetFolder="Builds/VisualStudio2017_CI" externalLibraries="Setupapi.lib&#10;hid.lib&#10;hidapi_static.lib">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" headerPath="../../External/hidapi/include"
+                       libraryPath="../../External/hidapi/lib/win/x64" binaryPath="Binaries/CI/Debug"/>
+        <CONFIGURATION isDebug="0" name="Release" headerPath="../../External/hidapi/include"
+                       libraryPath="../../External/hidapi/lib/win/x64" binaryPath="Binaries/CI/Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE/modules"/>
+      </MODULEPATHS>
+    </VS2017>
   </EXPORTFORMATS>
   <MODULES>
-    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
   </MODULES>
   <LIVE_SETTINGS>
     <WINDOWS/>
