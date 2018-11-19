@@ -4,7 +4,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING .ISS SCRIPT FILES!
 
 #define ApplicationName 'FlowtoysUpdater'
-#define ApplicationVersion GetStringFileInfo('Binaries/Release/App/FlowtoysUpdater.exe',"ProductVersion")
+#define ApplicationVersion GetStringFileInfo('Binaries/CI/Release/App/FlowtoysUpdater.exe',"ProductVersion")
                              
 [Setup]
 AppName={#ApplicationName}
@@ -29,7 +29,7 @@ SetupIconFile=setup.ico
 SetupWindowTitle={#ApplicationName} {#ApplicationVersion} Setup
 
 [Files]
-Source: "Binaries/Release/App/{#ApplicationName}.exe"; DestDir: "{app}"
+Source: "Binaries/CI/Release/App/{#ApplicationName}.exe"; DestDir: "{app}"
 Source: "redist\vcredist_x64.exe"; DestDir: "{tmp}"; 
 ;Source: "Binaries/Release/App/*.dll"; DestDir: "{app}"
 
