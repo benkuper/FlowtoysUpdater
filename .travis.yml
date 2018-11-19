@@ -79,7 +79,7 @@ install:
     cd ~;
     pwd;
     git clone --depth=1 --branch=develop-local https://github.com/benkuper/JUCE.git JUCE;
-    cd /benkuper;
+    cd /benkuper;"
   fi
 
 script:
