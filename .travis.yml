@@ -103,7 +103,8 @@ after_success:
     wget "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage";
     chmod a+x appimagetool-x86_64.AppImage;
     echo 'Packaging AppImage...';
-    cp build/FlowtoysUpdater FlowtoysUpdater.AppDir/usr/bin;
+    mkdir FlowtoysUpdater.AppDir/usr/bin
+    cp build/FlowtoysUpdater FlowtoysUpdater.AppDir/usr/bin/;
     sed -i -e 's#/usr#././#g' FlowtoysUpdater.AppDir/usr/bin/FlowtoysUpdater;
     ./appimagetool-x86_64.AppImage FlowtoysUpdater.AppDir FlowtoysUpdater-linux-x64-$SUFFIX.AppImage;
     echo 'Uploading $SUFFIX ...';
