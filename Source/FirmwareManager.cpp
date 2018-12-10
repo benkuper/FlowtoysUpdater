@@ -23,17 +23,17 @@ FirmwareManager::FirmwareManager() :
 	if (!firmwareFolder.exists()) firmwareFolder.createDirectory();
 
 	startThread();
+	startTimer(1000*3600); //check every hour
 }
 
 FirmwareManager::~FirmwareManager()
 {
 	signalThreadShouldExit();
-	waitForThreadToExit(1000);
+	waitForThreadToExit(3000);
 }
 
 void FirmwareManager::initLoad()
 {
-
 	startThread();
 }
 
@@ -104,7 +104,7 @@ Firmware * FirmwareManager::getFirmwareForFile(File f)
 	String gitRev = fwMeta.getProperty("git_rev", "[not set]");
 	String fwIdent = fwMeta.getProperty("fw_ident", "[not set]");
 
-	Firmware * fw = new Firmware(fwData, totalBytesToSend, fwMeta, fwIdent + ", version " + targetVersion + " (" + fwDate + ")", targetVersion, targetVersion.getFloatValue(), targetPID, targetVID);
+	Firmware * fw = new Firmware(fwData, totalBytesToSend, fwMeta, f.getFileNameWithoutExtension() + " - " + fwIdent + ", version " + targetVersion + " (" + fwDate + ")", targetVersion, targetVersion.getFloatValue(), targetPID, targetVID);
 	DBG(fwIdentStrings->indexOf(fwIdent) << " <> " << (int)(fwIdent == "capsule"));
 	
 	for (int i = 0; i < TYPE_MAX; i++)
@@ -256,4 +256,9 @@ void FirmwareManager::finished(URL::DownloadTask * task, bool success)
 
 		queuedNotifier.addMessage(new FirmwareManagerEvent(FirmwareManagerEvent::FIRMWARE_LOAD_ERROR));
     }
+}
+
+void FirmwareManager::timerCallback()
+{
+	startThread();
 }

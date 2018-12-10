@@ -22,6 +22,7 @@ public:
 	MemoryBlock data;
 	int totalBytesToSend;
 
+
 	String infos;
 	String versionString;
 	var meta;
@@ -43,7 +44,8 @@ public:
 
 class FirmwareManager :
 	public Thread,
-	public URL::DownloadTask::Listener
+	public URL::DownloadTask::Listener,
+	public Timer
 {
 public:
 	juce_DeclareSingleton(FirmwareManager,true)
@@ -84,6 +86,8 @@ public:
     virtual void progress (URL::DownloadTask* task, int64 bytesDownloaded, int64 totalLength) override;
     virtual void finished(URL::DownloadTask * task, bool success) override;
 
+
+	void timerCallback() override;
 
 	class FirmwareManagerEvent
 	{

@@ -94,7 +94,7 @@ void FirmwareChooserScreen::resized()
 	Rectangle<int> br = r.removeFromBottom(100);
 	selectBT.setBounds(br.withSizeKeepingCentre(100, 40).translated(0, -50));
 	chooseFileBT.setBounds(br.withSizeKeepingCentre(120, 40));
-	fwChooser.setBounds(r.withSizeKeepingCentre(300, 30));
+	fwChooser.setBounds(r.withSizeKeepingCentre(500, 30));
 }
 
 void FirmwareChooserScreen::newMessage(const FirmwareManager::FirmwareManagerEvent & e)
