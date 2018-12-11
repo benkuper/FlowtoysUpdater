@@ -203,8 +203,9 @@ void FirmwareManager::run()
 						if (downloadedFirmwares == onlineFirmwares) loadFirmwares();
 					} else
 					{
-                        String fURL = remoteHost + String("firmwares/") + fileData[i].toString().replace(" ","%20"); //add handling for spaces
-						DBG("Downloading " << fURL);
+                        String fURL = remoteHost + String("firmwares/") + URL::addEscapeChars(fileData[i].toString(),false); //add handling for spaces
+                        
+                        DBG("Downloading " << fURL);
 						URL downloadURL(fURL);
                         URL::DownloadTask * t = downloadURL.downloadToFile(f, "", this);
                         if(t == nullptr)

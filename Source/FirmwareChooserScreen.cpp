@@ -38,10 +38,9 @@ void FirmwareChooserScreen::updateVisibility()
 	
 	fwChooser.clear();
 	fwChooser.setTextWhenNoChoicesAvailable("No firmware available, are you connected to internet ?");
-	fwChooser.setTextWhenNothingSelected("auto update");
 	fwList = FirmwareManager::getInstance()->getFirmwaresForType(PropManager::getInstance()->selectedType);
 
-	fwChooser.addItem("auto update", -1);
+	//fwChooser.addItem("auto update", -1);
 	int indexToSelect = -1;
 	for (int i = 0; i < fwList.size(); i++)
 	{
@@ -52,7 +51,8 @@ void FirmwareChooserScreen::updateVisibility()
 		if (isLocal) indexToSelect = i + 1;
 		
 	}
-
+    fwChooser.setTextWhenNothingSelected(fwList.size() > 0?fwList[0]->infos:"No firmware");
+    
 	selectBT.setVisible(v);
 	fwChooser.setVisible(v);
 	selectBT.setEnabled(fwChooser.getNumItems() > 0);
