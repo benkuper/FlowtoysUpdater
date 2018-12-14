@@ -56,7 +56,11 @@ void FirmwareChooserScreen::updateVisibility()
 	selectBT.setVisible(v);
 	fwChooser.setVisible(v);
 	selectBT.setEnabled(fwChooser.getNumItems() > 0);
-	if (indexToSelect != -1) fwChooser.setSelectedItemIndex(indexToSelect);
+	if (indexToSelect != -1)
+	{
+		DBG("Index to select : " << indexToSelect);
+		fwChooser.setSelectedId(indexToSelect);
+	}
 	repaint();
 }
 
