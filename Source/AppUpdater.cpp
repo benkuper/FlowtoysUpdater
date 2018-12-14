@@ -95,7 +95,7 @@ void AppUpdater::downloadUpdate()
 
 	downloadingFileName = targetFile.getFileName();
 
-	URL downloadURL = URL(downloadURLBase + downloadingFileName);
+	URL downloadURL = URL(downloadURLBase + URL::addEscapeChars(downloadingFileName, false));
 
 	DBG("Downloading " + downloadURL.toString(false) + "...");
 	downloadTask = downloadURL.downloadToFile(targetFile, "", this);
