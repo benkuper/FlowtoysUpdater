@@ -104,8 +104,10 @@ Firmware * FirmwareManager::getFirmwareForFile(File f)
 	String gitRev = fwMeta.getProperty("git_rev", "[not set]");
 	String fwIdent = fwMeta.getProperty("fw_ident", "[not set]");
 
-	Firmware * fw = new Firmware(fwData, totalBytesToSend, fwMeta, f.getFileNameWithoutExtension() + " - " + fwIdent + ", version " + targetVersion + " (" + fwDate + ")", targetVersion, targetVersion.getFloatValue(), targetPID, targetVID);
-	DBG(fwIdentStrings->indexOf(fwIdent) << " <> " << (int)(fwIdent == "capsule"));
+	String fwInfos = fwIdent + ", version " + targetVersion + " (" + fwDate + ")";
+	Firmware * fw = new Firmware(fwData, totalBytesToSend, fwMeta, f.getFileNameWithoutExtension() /* + " - "+fwInfos */, targetVersion, targetVersion.getFloatValue(), targetPID, targetVID);
+	
+	//DBG(fwIdentStrings->indexOf(fwIdent) << " <> " << (int)(fwIdent == "capsule"));
 	
 	for (int i = 0; i < TYPE_MAX; i++)
 	{

@@ -78,7 +78,12 @@ void FirmwareChooserScreen::paint(Graphics & g)
 	else
 	{
 		g.setColour(Colours::lightgrey);
-		s = "leave as \"auto update\" for the latest version\nor select your preferred firmware.";
+		//s = "leave as \"auto update\" for the latest version\nor select your preferred firmware.";
+		s = "please select the firmware of your choice.\n \
+for the most recent version, select the highest version number.\n \
+for poi and staff select \"spin(pixel count)\" \n \
+for staves, the pixel count is 1 / 2 of the staff. \n \
+to ensure the latest versions please restart the updater.";
 	}
 
 	g.drawFittedText(s, getLocalBounds().removeFromTop(100).reduced(40, 10), Justification::centred, 5, false);
@@ -98,7 +103,7 @@ void FirmwareChooserScreen::resized()
 	Rectangle<int> br = r.removeFromBottom(100);
 	selectBT.setBounds(br.withSizeKeepingCentre(100, 40).translated(0, -50));
 	chooseFileBT.setBounds(br.withSizeKeepingCentre(120, 40));
-	fwChooser.setBounds(r.withSizeKeepingCentre(500, 30));
+	fwChooser.setBounds(r.withSizeKeepingCentre(450, 30).translated(0,30));
 }
 
 void FirmwareChooserScreen::newMessage(const FirmwareManager::FirmwareManagerEvent & e)
