@@ -86,12 +86,14 @@ void AppUpdater::downloadUpdate()
 
 	targetDir.createDirectory();
 
-#if JUCE_WINDOWS
-	File targetFile = File::getSpecialLocation(File::tempDirectory).getChildFile(downloadingFileName);
-#else	
-	File targetFile = targetDir.getChildFile(downloadingFileName);
-	if (targetFile.existsAsFile()) targetFile.deleteFile();
-#endif
+	if (isInstaller)
+	{
+		targetFile = File::getSpecialLocation(File::tempDirectory).getChildFile(downloadingFileName);
+	}else
+	{
+		targetFile = targetDir.getChildFile(downloadingFileName);
+		if (targetFile.existsAsFile()) targetFile.deleteFile();
+	}
 
 	downloadingFileName = targetFile.getFileName();
 
@@ -120,13 +122,12 @@ void AppUpdater::run()
 	ScopedPointer<InputStream> stream(updateURL.createInputStream(false, nullptr, nullptr, String(),
 		2000, // timeout in millisecs
 		&responseHeaders, &statusCode));
-#if JUCE_WINDOWS
+
 	if (statusCode != 200)
 	{
 		DBG("Failed to connect, status code = " + String(statusCode));
 		return;
 	}
-#endif
 
 	DBG("AppUpdater:: Status code " << statusCode);
 
@@ -174,16 +175,22 @@ If the auto-update fails, you can always download and replace it manually.";
 
 				String title = "New version available";
 
-				extension = "zip";
+				fileExtension = "zip";
+
+				String osToCheck = "";
 #if JUCE_WINDOWS
-				extension = data.getProperty("winExtension", "zip");
+				osToCheck = "win";
 #elif JUCE_MAC
-				extension = data.getProperty("osxExtension", "zip");
+				osToCheck = "osx";
 #elif JUCE_LINUX
-				extension = data.getProperty("linuxExtension", "zip");
+				osToCheck = "linux";
 #endif
 
-				downloadingFileName = getDownloadFileName(version, extension);
+				String installerExtension = data.getProperty(osToCheck + "Installer", "");
+				isInstaller = installerExtension.isNotEmpty();
+				fileExtension = isInstaller ? installerExtension : data.getProperty(osToCheck + "Extension", "zip");
+
+				downloadingFileName = getDownloadFileName(version, fileExtension);
 
 				queuedNotifier.addMessage(new AppUpdateEvent(AppUpdateEvent::UPDATE_AVAILABLE, title, msg, changelogString));
 
@@ -214,24 +221,9 @@ void AppUpdater::finished(URL::DownloadTask * task, bool success)
 		return;
 	}
 
-	bool isInstaller = (extension == "exe" || extension == "pkg");
-
-	File f;
-	File appFile;
-	File appDir;
-
-	if (isInstaller)
-	{
-		f = File::getSpecialLocation(File::tempDirectory).getChildFile(downloadingFileName);
-	}
-	else
-	{
-		appFile = File::getSpecialLocation(File::currentApplicationFile);
-		appDir = appFile.getParentDirectory();
-		f = appDir.getChildFile("update_temp/" + downloadingFileName);
-	}
-
-
+	File f = targetFile;
+	File appFile = File::getSpecialLocation(File::currentApplicationFile);
+	File appDir = appFile.getParentDirectory();
 
 	if (!f.exists())
 	{
@@ -249,7 +241,7 @@ void AppUpdater::finished(URL::DownloadTask * task, bool success)
 
 	if (isInstaller)
 	{
-		File appFile = File::getSpecialLocation(File::tempDirectory).getChildFile(ProjectInfo::projectName + String("_install." + extension));
+		File appFile = File::getSpecialLocation(File::tempDirectory).getChildFile(ProjectInfo::projectName + String("_install." + fileExtension));
 		f.copyFileTo(appFile);
 	}
 	else

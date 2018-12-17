@@ -82,7 +82,9 @@ public:
 	String downloadingFileName;
 	String filePrefix;
 	File targetDir;
-	String extension;
+	File targetFile;
+	bool isInstaller;
+	String fileExtension;
 
 	ScopedPointer<UpdateDialogWindow> updateWindow;
 	
