@@ -26,7 +26,7 @@ before_install:
     then 
       echo "Beta version, set config to Release"; 
       export MAKECONF=Release
-      export SUFFIX=$TRAVIS_TAG-beta
+      export SUFFIX=$TRAVIS_TAG
     else 
       echo "Stable version, set config to Release"; 
       export MAKECONF=Release
@@ -122,6 +122,6 @@ after_success:
     curl -T FlowtoysUpdater-osx-$SUFFIX.zip -u $FTP_USER:$FTP_PASSWORD --insecure ftp://flow-toys.com/app/
     echo "Packaging and Updating..."
     cd /Users/travis/build/benkuper/FlowtoysUpdater
-    packagesbuild OSXPackage.pkgproj
+    packagesbuild OSXPackage.pkgproj --package-version $SUFFIX -v
     curl -T FlowtoysUpdater-osx-$SUFFIX.pkg -u $FTP_USER:$FTP_PASSWORD --insecure ftp://flow-toys.com/app/
     fi
