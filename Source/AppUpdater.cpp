@@ -188,8 +188,8 @@ If the auto-update fails, you can always download and replace it manually.";
 
 				String installerExtension = data.getProperty(osToCheck + "Installer", "");
 				isInstaller = installerExtension.isNotEmpty();
-				fileExtension = isInstaller ? installerExtension : data.getProperty(osToCheck + "Extension", "zip");
-
+				fileExtension = isInstaller ? installerExtension : data.getProperty(osToCheck + "Extension", "zip").toString();
+                
 				downloadingFileName = getDownloadFileName(version, fileExtension);
 
 				queuedNotifier.addMessage(new AppUpdateEvent(AppUpdateEvent::UPDATE_AVAILABLE, title, msg, changelogString));
@@ -241,10 +241,9 @@ void AppUpdater::finished(URL::DownloadTask * task, bool success)
 
 	if (isInstaller)
 	{
-		File appFile = File::getSpecialLocation(File::tempDirectory).getChildFile(ProjectInfo::projectName + String("_install." + fileExtension));
+		appFile = File::getSpecialLocation(File::tempDirectory).getChildFile(ProjectInfo::projectName + String("_install." + fileExtension));
 		f.copyFileTo(appFile);
-	}
-	else
+	}else
 	{
 		File td = f.getParentDirectory();
 		ZipFile zip(f);
@@ -289,12 +288,16 @@ void AppUpdater::finished(URL::DownloadTask * task, bool success)
 
 		DBG("Here");
 		if (updateWindow != nullptr) updateWindow->removeFromDesktop();
-
+        
+        DBG("Start process : " << appFile.getFullPathName());
 		bool result = appFile.startAsProcess();
-		DBG("Start process " << (int)result);
-
-		DBG("Quit");
-		JUCEApplication::quit();
+        
+        DBG("Process result : " << (int)result);
+        if(!isInstaller || !result) appFile.revealToUser();
+        
+        DBG("Quit");
+        JUCEApplication::quit();
+        
 	}
 
 
@@ -302,8 +305,15 @@ void AppUpdater::finished(URL::DownloadTask * task, bool success)
 
 void AppUpdater::progress(URL::DownloadTask *, int64 bytesDownloaded, int64 totalLength)
 {
-	progression = bytesDownloaded * 1.0f / totalLength;
-	queuedNotifier.addMessage(new AppUpdateEvent(AppUpdateEvent::DOWNLOAD_PROGRESS, progression));
+    if(totalLength == -1)
+    {
+#if JUCE_MAC
+        totalLength = 5000000; //around 5Mo to expect for app
+#endif
+    }
+    progression = (float)(bytesDownloaded * 1.0f) / float(totalLength);
+    DBG("Progress  " << progression << " (" << bytesDownloaded << " / " << totalLength << ")");
+    queuedNotifier.addMessage(new AppUpdateEvent(AppUpdateEvent::DOWNLOAD_PROGRESS, progression));
 }
 
 void AppUpdater::newMessage(const AppUpdateEvent & e)
