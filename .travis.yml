@@ -51,6 +51,11 @@ before_install:
     gem install xcpretty
     gem install xcpretty-travis-formatter
     pwd
+    echo "Installing packager..."
+    curl -L -o Packages.dmg 'http://s.sudre.free.fr/Software/files/Packages.dmg'
+    hdiutil mount Packages.dmg
+    sudo installer -pkg /Volumes/Packages\ 1.2.4/Install\ Packages.pkg -target /
+    hdiutil detach /Volumes/Packages\ 1.2.4/    
     ls -d */
     cd /Users/travis
     git clone --depth=1 --branch=develop-local https://github.com/benkuper/JUCE.git JUCE
@@ -110,8 +115,13 @@ after_success:
     echo 'Uploading $SUFFIX ...';
     curl --verbose --progress-bar --ipv4 --connect-timeout 8 --max-time 120 --retry 128 --ftp-pasv -T FlowtoysUpdater-linux-x64-$SUFFIX.AppImage -u $FTP_USER:$FTP_PASSWORD ftp://flow-toys.com/app/;"
   else
+    echo "Zipping and Updating..."
     cd /Users/travis/build/benkuper/FlowtoysUpdater/Builds/MacOSX/build/$MAKECONF
     ls
     zip -r -y FlowtoysUpdater-osx-$SUFFIX.zip FlowtoysUpdater.app
     curl -T FlowtoysUpdater-osx-$SUFFIX.zip -u $FTP_USER:$FTP_PASSWORD --insecure ftp://flow-toys.com/app/
-  fi
+    echo "Packaging and Updating..."
+    cd /Users/travis/build/benkuper/FlowtoysUpdater
+    packagesbuild OSXPackage.pkgproj
+    curl -T FlowtoysUpdater-osx-$SUFFIX.pkg -u $FTP_USER:$FTP_PASSWORD --insecure ftp://flow-toys.com/app/
+    fi
