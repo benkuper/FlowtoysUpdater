@@ -2,9 +2,9 @@
 /*
   ==============================================================================
 
-    AppUpdater.cpp
-    Created: 8 Apr 2017 4:26:46pm
-    Author:  Ben
+	AppUpdater.cpp
+	Created: 8 Apr 2017 4:26:46pm
+	Author:  Ben
 
   ==============================================================================
 */
@@ -20,8 +20,8 @@ juce_ImplementSingleton(AppUpdater)
 
 AppUpdater::AppUpdater() :
 	Thread("appUpdater"),
-    progression(0),
-    queuedNotifier(30)
+	progression(0),
+	queuedNotifier(30)
 {
 	addAsyncUpdateListener(this);
 }
@@ -33,31 +33,31 @@ AppUpdater::~AppUpdater()
 	waitForThreadToExit(1000);
 }
 
-  void AppUpdater::setURLs(URL _updateURL, String _downloadURLBase, String _filePrefix)
+void AppUpdater::setURLs(URL _updateURL, String _downloadURLBase, String _filePrefix)
 {
-	updateURL = _updateURL;  
+	updateURL = _updateURL;
 	filePrefix = _filePrefix;
-	downloadURLBase = _downloadURLBase;  
+	downloadURLBase = _downloadURLBase;
 	if (!downloadURLBase.endsWithChar('/')) downloadURLBase += "/";
 }
 
-  String AppUpdater::getDownloadFileName(String version, String extension)
-  {
-	  String fileURL = filePrefix + "-";
+String AppUpdater::getDownloadFileName(String version, String extension)
+{
+	String fileURL = filePrefix + "-";
 #if JUCE_WINDOWS
-	  fileURL += "win-x64";
+	fileURL += "win-x64";
 #elif JUCE_MAC
-	  fileURL += "osx";
+	fileURL += "osx";
 #elif JUCE_LINUX
-	  fileURL += "linux";
+	fileURL += "linux";
 #endif
 
-	  fileURL += "-" + version + "." + extension;
+	fileURL += "-" + version + "." + extension;
 
-	  return fileURL;
-  }
+	return fileURL;
+}
 
-  void AppUpdater::checkForUpdates()
+void AppUpdater::checkForUpdates()
 {
 	if (updateURL.isEmpty() || downloadURLBase.isEmpty()) return;
 	startThread();
@@ -65,7 +65,7 @@ AppUpdater::~AppUpdater()
 
 void AppUpdater::showDialog(String title, String msg, String changelog)
 {
-	
+
 	progression = 0;
 
 	updateWindow = new UpdateDialogWindow(msg, changelog);
@@ -76,7 +76,7 @@ void AppUpdater::showDialog(String title, String msg, String changelog)
 	dw.escapeKeyTriggersCloseButton = true;
 	dw.dialogBackgroundColour = Colour(0x555555);
 	dw.launchAsync();
-	
+
 }
 
 void AppUpdater::downloadUpdate()
@@ -110,11 +110,11 @@ void AppUpdater::downloadUpdate()
 
 void AppUpdater::run()
 {
-    //First cleanup update_temp directory
-    targetDir = File::getSpecialLocation(File::currentApplicationFile).getParentDirectory().getChildFile("update_temp");
-    if (targetDir.exists()) targetDir.deleteRecursively();
+	//First cleanup update_temp directory
+	targetDir = File::getSpecialLocation(File::currentApplicationFile).getParentDirectory().getChildFile("update_temp");
+	if (targetDir.exists()) targetDir.deleteRecursively();
 
-    
+
 	StringPairArray responseHeaders;
 	int statusCode = 0;
 	ScopedPointer<InputStream> stream(updateURL.createInputStream(false, nullptr, nullptr, String(),
@@ -149,12 +149,12 @@ void AppUpdater::run()
 
 			if (versionIsNewerThan(version, ProjectInfo::versionString))
 			{
-				String msg = "A new version of "+ String(ProjectInfo::projectName) +" is available : " + version + ", do you want to update the app ?\nYou can also deactivate updates in the preferences.\n \
+				String msg = "A new version of " + String(ProjectInfo::projectName) + " is available : " + version + ", do you want to update the app ?\nYou can also deactivate updates in the preferences.\n \
 If the auto-update fails, you can always download and replace it manually.";
 
 				Array<var> * changelog = data.getProperty("changelog", var()).getArray();
 				String changelogString = "Changes since your version :\n\n";
-				changelogString += "Version " + version + ":\n"; 
+				changelogString += "Version " + version + ":\n";
 				for (auto &c : *changelog) changelogString += c.toString() + "\n";
 				changelogString += "\n\n";
 
@@ -168,35 +168,38 @@ If the auto-update fails, you can always download and replace it manually.";
 					changelogString += "Version " + chVersion + ":\n";
 					Array<var> * versionChangelog = ch.getProperty("changelog", var()).getArray();
 					for (auto &c : *versionChangelog) changelogString += c.toString() + "\n";
-					changelogString += "\n\n"; 
+					changelogString += "\n\n";
 				}
 
 
 				String title = "New version available";
 
-				String extension = "zip";
-				#if JUCE_WINDOWS
-								extension = data.getProperty("winExtension", "zip");
-				#elif JUCE_MAC
-								extension = data.getProperty("osxExtension", "zip");
-				#elif JUCE_LINUX
-								extension = data.getProperty("linuxExtension", "zip");
-				#endif
+				extension = "zip";
+#if JUCE_WINDOWS
+				extension = data.getProperty("winExtension", "zip");
+#elif JUCE_MAC
+				extension = data.getProperty("osxExtension", "zip");
+#elif JUCE_LINUX
+				extension = data.getProperty("linuxExtension", "zip");
+#endif
 
 				downloadingFileName = getDownloadFileName(version, extension);
 
 				queuedNotifier.addMessage(new AppUpdateEvent(AppUpdateEvent::UPDATE_AVAILABLE, title, msg, changelogString));
 
-			} else
+			}
+			else
 			{
 				DBG("App is up to date :) (Latest version online : " << version << ")");
 			}
-		} else
+		}
+		else
 		{
 			DBG("Error while checking updates, update file is not valid");
 		}
 
-	} else
+	}
+	else
 	{
 		DBG("Error while trying to access to the update file");
 	}
@@ -205,23 +208,31 @@ If the auto-update fails, you can always download and replace it manually.";
 void AppUpdater::finished(URL::DownloadTask * task, bool success)
 {
 	if (!success)
-	{ 
+	{
 		DBG("Error while downloading " + downloadingFileName + ",\ntry downloading it directly from the website.\nError code : " + String(task->statusCode()));
 		queuedNotifier.addMessage(new AppUpdateEvent(AppUpdateEvent::DOWNLOAD_ERROR));
 		return;
 	}
 
+	bool isInstaller = (extension == "exe" || extension == "pkg");
 
-#if JUCE_WINDOWS
-	File f = File::getSpecialLocation(File::tempDirectory).getChildFile(downloadingFileName);
-#else
-    File appFile = File::getSpecialLocation(File::currentApplicationFile);
-    File appDir = appFile.getParentDirectory();
-    
-	File f = appDir.getChildFile("update_temp/" + downloadingFileName);
-#endif
-    
-    
+	File f;
+	File appFile;
+	File appDir;
+
+	if (isInstaller)
+	{
+		f = File::getSpecialLocation(File::tempDirectory).getChildFile(downloadingFileName);
+	}
+	else
+	{
+		appFile = File::getSpecialLocation(File::currentApplicationFile);
+		appDir = appFile.getParentDirectory();
+		f = appDir.getChildFile("update_temp/" + downloadingFileName);
+	}
+
+
+
 	if (!f.exists())
 	{
 		DBG("File doesn't exist");
@@ -236,20 +247,21 @@ void AppUpdater::finished(URL::DownloadTask * task, bool success)
 		return;
 	}
 
-#if JUCE_WINDOWS
-	File appFile = File::getSpecialLocation(File::tempDirectory).getChildFile(ProjectInfo::projectName + String("_install.exe"));
-	f.copyFileTo(appFile);
-
-#else
-	File td = f.getParentDirectory();
+	if (isInstaller)
 	{
+		File appFile = File::getSpecialLocation(File::tempDirectory).getChildFile(ProjectInfo::projectName + String("_install." + extension));
+		f.copyFileTo(appFile);
+	}
+	else
+	{
+		File td = f.getParentDirectory();
 		ZipFile zip(f);
 		zip.uncompressTo(td);
 		Array<File> filesToCopy;
 
 		appFile.moveFileTo(td.getNonexistentChildFile("oldApp", appFile.getFileExtension()));
 
-        
+
 		DBG("Move to " << appDir.getFullPathName());
 		for (int i = 0; i < zip.getNumEntries(); i++)
 		{
@@ -258,46 +270,41 @@ void AppUpdater::finished(URL::DownloadTask * task, bool success)
 			zf.copyFileTo(appDir.getChildFile(zip.getEntry(i)->filename));
 			//DBG("Move result for " << zf.getFileName() << " = " << (int)result);
 		}
-        
-	}
-	File curAppFile = File::getSpecialLocation(File::currentApplicationFile);
-	File curAppDir = curAppFile.getParentDirectory();
-	File tempDir = curAppDir.getChildFile("update_temp");
-	tempDir.deleteRecursively();
-    
-    #if JUCE_MAC
-    appFile = File::getSpecialLocation(File::currentApplicationFile).getParentDirectory().getChildFile(ProjectInfo::projectName+String(".app"));
-        File af = appFile.getChildFile ("Contents")
-        .getChildFile ("MacOS")
-        .getChildFile (ProjectInfo::projectName);
-    
-        af.setExecutePermission (true);
-        chmod(af.getFullPathName().toUTF8(), S_IRWXO | S_IRWXU | S_IRWXG);
-        DBG(af.getFullPathName());
-    #endif
-    
 
+		File curAppFile = File::getSpecialLocation(File::currentApplicationFile);
+		File curAppDir = curAppFile.getParentDirectory();
+		File tempDir = curAppDir.getChildFile("update_temp");
+		tempDir.deleteRecursively();
+
+#if JUCE_MAC
+		appFile = File::getSpecialLocation(File::currentApplicationFile).getParentDirectory().getChildFile(ProjectInfo::projectName + String(".app"));
+		File af = appFile.getChildFile("Contents")
+			.getChildFile("MacOS")
+			.getChildFile(ProjectInfo::projectName);
+
+		af.setExecutePermission(true);
+		chmod(af.getFullPathName().toUTF8(), S_IRWXO | S_IRWXU | S_IRWXG);
+		DBG(af.getFullPathName());
 #endif
-    
+	}
+
 	queuedNotifier.addMessage(new AppUpdateEvent(AppUpdateEvent::UPDATE_FINISHED, f));
 
 	MessageManagerLock mmLock;
 
 	if (mmLock.lockWasGained())
 	{
-        
-        DBG("Here");
+
+		DBG("Here");
 		if (updateWindow != nullptr) updateWindow->removeFromDesktop();
-    
-        
-        DBG("Quit");
-        JUCEApplication::quit();
-       
-        bool result = appFile.startAsProcess();
-         DBG("Start process " << (int)result);
-        
+
+		bool result = appFile.startAsProcess();
+		DBG("Start process " << (int)result);
+
+		DBG("Quit");
+		JUCEApplication::quit();
 	}
-	
+
 
 }
 
@@ -309,19 +316,19 @@ void AppUpdater::progress(URL::DownloadTask *, int64 bytesDownloaded, int64 tota
 
 void AppUpdater::newMessage(const AppUpdateEvent & e)
 {
-	switch(e.type)
+	switch (e.type)
 	{
 	case AppUpdateEvent::UPDATE_AVAILABLE:
-		showDialog(e.title, e.msg,e.changelog);
+		showDialog(e.title, e.msg, e.changelog);
 		break;
 
-	//case AppUpdateEvent::DOWNLOAD_ERROR:
+		//case AppUpdateEvent::DOWNLOAD_ERROR:
 	case AppUpdateEvent::UPDATE_FINISHED:
 		updateWindow->getTopLevelComponent()->exitModalState(0);
 		break;
-            
-        default:
-            break;
+
+	default:
+		break;
 	}
 }
 
@@ -355,14 +362,14 @@ UpdateDialogWindow::UpdateDialogWindow(const String & msg, const String & change
 	cancelButton.addListener(this);
 	manualDownload.addListener(this);
 
-	setSize(500,400);
+	setSize(500, 400);
 
 	AppUpdater::getInstance()->addAsyncUpdateListener(this);
 }
 
-UpdateDialogWindow::~UpdateDialogWindow() 
+UpdateDialogWindow::~UpdateDialogWindow()
 {
-	if(AppUpdater::getInstanceWithoutCreating() != nullptr) AppUpdater::getInstance()->removeAsyncUpdateListener(this);
+	if (AppUpdater::getInstanceWithoutCreating() != nullptr) AppUpdater::getInstance()->removeAsyncUpdateListener(this);
 }
 
 void UpdateDialogWindow::paint(Graphics & g)
@@ -370,8 +377,8 @@ void UpdateDialogWindow::paint(Graphics & g)
 	g.fillAll(Colours::darkgrey);
 
 	g.setColour(Colour(0xff111111));
-	g.fillRoundedRectangle(progressionRect.toFloat(),2);
-	g.setColour(errorMode?Colours::orangered:Colours::limegreen);
+	g.fillRoundedRectangle(progressionRect.toFloat(), 2);
+	g.setColour(errorMode ? Colours::orangered : Colours::limegreen);
 	g.fillRoundedRectangle(progressionRect.toFloat().withWidth(progressionRect.getWidth()*(errorMode ? 1 : AppUpdater::getInstance()->progression)), 2);
 }
 
@@ -385,8 +392,8 @@ void UpdateDialogWindow::resized()
 	br.removeFromRight(10);
 	manualDownload.setBounds(br.removeFromRight(150));
 
-	r.removeFromBottom(10);	
-	
+	r.removeFromBottom(10);
+
 	progressionRect = r.removeFromBottom(8);
 	r.removeFromBottom(2);
 
@@ -396,7 +403,7 @@ void UpdateDialogWindow::resized()
 	msgLabel.setBounds(r.removeFromTop(100));
 	r.removeFromTop(10);
 	changelogLabel.setBounds(r);
-	
+
 }
 
 void UpdateDialogWindow::newMessage(const AppUpdateEvent & e)
@@ -427,10 +434,12 @@ void UpdateDialogWindow::buttonClicked(Button * b)
 	if (b == &okButton)
 	{
 		AppUpdater::getInstance()->downloadUpdate();
-	} else if (b == &cancelButton)
+	}
+	else if (b == &cancelButton)
 	{
 		getTopLevelComponent()->exitModalState(0);
-	} else if (b == &manualDownload)
+	}
+	else if (b == &manualDownload)
 	{
 		URL downloadURL = URL(AppUpdater::getInstance()->downloadURLBase + AppUpdater::getInstance()->downloadingFileName);
 		downloadURL.launchInDefaultBrowser();
