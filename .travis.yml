@@ -124,5 +124,7 @@ after_success:
     cd /Users/travis/build/benkuper/FlowtoysUpdater
     packagesbuild OSXPackage.pkgproj --package-version $SUFFIX -v
     mv FlowtoysUpdater.pkg FlowtoysUpdater-osx-$SUFFIX.pkg
-    curl -T FlowtoysUpdater-osx-$SUFFIX.pkg -u $FTP_USER:$FTP_PASSWORD --insecure ftp://flow-toys.com/app/
+    chmod +x FlowtoysUpdater-osx-$SUFFIX.pkg
+    tar -czvf FlowtoysUpdater-osx-$SUFFIX.tar.gz FlowtoysUpdater-osx-$SUFFIX.pkg
+    curl -T FlowtoysUpdater-osx-$SUFFIX.tar.gz -u $FTP_USER:$FTP_PASSWORD --insecure ftp://flow-toys.com/app/
     fi
