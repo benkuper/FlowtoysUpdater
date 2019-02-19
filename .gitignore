@@ -68,3 +68,7 @@ Chataigne-win-x64-bleedingedge\.exe
 FlowtoysUpdater-win-x64\.exe
 
 *.exe
+
+Builds/LinuxMakefile/appimagetool-x86_64\.AppImage
+
+Builds/LinuxMakefile/FlowtoysUpdater\.AppDir/usr/bin/FlowtoysUpdater

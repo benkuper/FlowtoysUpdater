@@ -112,8 +112,10 @@ after_success:
     cp build/FlowtoysUpdater FlowtoysUpdater.AppDir/usr/bin/;
     sed -i -e 's#/usr#././#g' FlowtoysUpdater.AppDir/usr/bin/FlowtoysUpdater;
     ./appimagetool-x86_64.AppImage FlowtoysUpdater.AppDir FlowtoysUpdater-linux-x64-$SUFFIX.AppImage;
+    chmod +x FlowtoysUpdater-linux-x64-$SUFFIX.AppImage;
+    tar -czvf FlowtoysUpdater-linux-x64-$SUFFIX.tar.gz FlowtoysUpdater-linux-x64-$SUFFIX.AppImage;
     echo 'Uploading $SUFFIX ...';
-    curl --verbose --progress-bar --ipv4 --connect-timeout 8 --max-time 120 --retry 128 --ftp-pasv -T FlowtoysUpdater-linux-x64-$SUFFIX.AppImage -u $FTP_USER:$FTP_PASSWORD ftp://flow-toys.com/app/;"
+    curl --verbose --progress-bar --ipv4 --connect-timeout 8 --max-time 120 --retry 128 --ftp-pasv -T FlowtoysUpdater-linux-x64-$SUFFIX.tar.gz -u $FTP_USER:$FTP_PASSWORD ftp://flow-toys.com/app/;
   else
     echo "Zipping and Updating..."
     cd /Users/travis/build/benkuper/FlowtoysUpdater/Builds/MacOSX/build/$MAKECONF
@@ -125,6 +127,5 @@ after_success:
     packagesbuild OSXPackage.pkgproj --package-version $SUFFIX -v
     mv FlowtoysUpdater.pkg FlowtoysUpdater-osx-$SUFFIX.pkg
     chmod +x FlowtoysUpdater-osx-$SUFFIX.pkg
-    tar -czvf FlowtoysUpdater-osx-$SUFFIX.tar.gz FlowtoysUpdater-osx-$SUFFIX.pkg
-    curl -T FlowtoysUpdater-osx-$SUFFIX.tar.gz -u $FTP_USER:$FTP_PASSWORD --insecure ftp://flow-toys.com/app/
+    curl -T FlowtoysUpdater-osx-$SUFFIX.pkg -u $FTP_USER:$FTP_PASSWORD --insecure ftp://flow-toys.com/app/
     fi
