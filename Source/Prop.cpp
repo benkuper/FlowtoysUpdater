@@ -41,7 +41,7 @@ Prop::Prop(StringRef productString, StringRef serial, hid_device * device, PropT
 	sendGetVersion(App);
 
 
-	infos = /*"Type : " + typeStrings[(int)type] + ", */"firmware : " + fwVersion + ", updated : " + fw_date + ", hardware : " + String(serialNumber);
+	infos = "firmware: " + fwVersion + ", created: " + fw_date + ", hardware ID: " + String(serialNumber);
     
     
 }

@@ -28,11 +28,13 @@ public:
 
 	TextButton selectBT;
 	TextButton chooseFileBT;
+	Label helpBT;
 
 	void updateVisibility();
 
 	void paint(Graphics &g) override;
 	void reset() override;
+	void mouseDown(const MouseEvent &e) override;
 
 	void resized() override;
 

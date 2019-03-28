@@ -44,7 +44,7 @@ void PropManager::checkProps()
 
 	//for (int i = 0; i < TYPE_MAX; i++)
 	//{
-	hid_device_info * deviceInfos = hid_enumerate(flowtoysVID, productIds[(int)selectedType]);
+	hid_device_info * deviceInfos = hid_enumerate(flowtoysVID, (unsigned short)productIds[(int)selectedType]);
 	hid_device_info * dInfo = deviceInfos;
 
 

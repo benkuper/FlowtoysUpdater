@@ -37,7 +37,7 @@ void UploadScreen::paint(Graphics & g)
 	r.setSize(300, 20);
 	g.fillRoundedRectangle(r.toFloat(), 2);
 	g.setColour(Colours::limegreen);
-	r.setWidth(r.getWidth()*progression);
+	r.setWidth((int)(r.getWidth()*progression));
 	g.fillRoundedRectangle(r.toFloat(), 2);
 }
 

@@ -21,7 +21,7 @@ AppScreen::~AppScreen()
 {
 }
 
-void AppScreen::paint(Graphics & g)
+void AppScreen::paint(Graphics &)
 {
 	//g.setColour(Colours::yellow);
 	//g.drawText(getName(), getLocalBounds().toFloat(), Justification::centred);

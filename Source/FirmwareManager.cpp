@@ -237,12 +237,12 @@ void FirmwareManager::run()
 
 }
 
-void FirmwareManager::progress (URL::DownloadTask* task, int64 bytesDownloaded, int64 totalLength)
+void FirmwareManager::progress (URL::DownloadTask*, int64, int64)
 {
-    DBG("Progress !");
+    //DBG("Progress !");
 }
 
-void FirmwareManager::finished(URL::DownloadTask * task, bool success)
+void FirmwareManager::finished(URL::DownloadTask *, bool success)
 {
 	downloadedFirmwares++;
 

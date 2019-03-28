@@ -24,6 +24,13 @@ FirmwareChooserScreen::FirmwareChooserScreen() :
 	chooseFileBT.addListener(this);
 	fwChooser.addListener(this);
 
+	helpBT.setColour(helpBT.textColourId, Colours::lightblue);
+	helpBT.setText("Don't know which firmware to download? Get some help by clicking here", dontSendNotification);
+	helpBT.setJustificationType(Justification::centred);
+	addAndMakeVisible(&helpBT);
+	helpBT.setMouseCursor(MouseCursor::PointingHandCursor);
+	helpBT.addMouseListener(this, false);
+
 	FirmwareManager::getInstance()->addAsyncManagerListener(this);
 	
 }
@@ -37,7 +44,7 @@ void FirmwareChooserScreen::updateVisibility()
 	bool v = FirmwareManager::getInstance()->firmwaresAreLoaded();
 	
 	fwChooser.clear();
-	fwChooser.setTextWhenNoChoicesAvailable("No firmware available, are you connected to internet ?");
+	fwChooser.setTextWhenNoChoicesAvailable("No firmware available, are you connected to internet?");
 	fwList = FirmwareManager::getInstance()->getFirmwaresForType(PropManager::getInstance()->selectedType);
 
 	//fwChooser.addItem("auto update", -1);
@@ -97,16 +104,28 @@ void FirmwareChooserScreen::reset()
 	updateVisibility();
 }
 
+void FirmwareChooserScreen::mouseDown(const MouseEvent & e)
+{
+	AppScreen::mouseDown(e);
+
+	if (e.eventComponent == &helpBT)
+	{
+		URL url("https://flowtoys2.freshdesk.com/support/solutions/articles/6000213534-how-to-update-your-capsule-2-0-firmware");
+		url.launchInDefaultBrowser();
+	}
+}
+
 void FirmwareChooserScreen::resized()
 {
 	Rectangle<int> r = getLocalBounds();
 	Rectangle<int> br = r.removeFromBottom(100);
 	selectBT.setBounds(br.withSizeKeepingCentre(100, 40).translated(0, -50));
 	chooseFileBT.setBounds(br.withSizeKeepingCentre(120, 40));
+	helpBT.setBounds(r.withSizeKeepingCentre(450, 30));
 	fwChooser.setBounds(r.withSizeKeepingCentre(450, 30).translated(0,30));
 }
 
-void FirmwareChooserScreen::newMessage(const FirmwareManager::FirmwareManagerEvent & e)
+void FirmwareChooserScreen::newMessage(const FirmwareManager::FirmwareManagerEvent &)
 {
 	updateVisibility();
 }
@@ -129,8 +148,8 @@ void FirmwareChooserScreen::buttonClicked(Button * b)
 		if (result)
 		{
 			File f = fc.getResult();
-			bool result =FirmwareManager::getInstance()->setLocalFirmware(f, PropManager::getInstance()->selectedType);
-			if (!result)
+			bool fResult =FirmwareManager::getInstance()->setLocalFirmware(f, PropManager::getInstance()->selectedType);
+			if (!fResult)
 			{
 				AlertWindow::showMessageBox(AlertWindow::WarningIcon, "Bad file", "The file you chose is either corrupted or not a firmware for " + displayNames[PropManager::getInstance()->selectedType] + ".", "OK");
 			}

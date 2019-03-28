@@ -9,10 +9,10 @@
 namespace BinaryData
 {
     extern const char*   Capsule_png;
-    const int            Capsule_pngSize = 10994;
+    const int            Capsule_pngSize = 1473518;
 
     extern const char*   Club_png;
-    const int            Club_pngSize = 13340;
+    const int            Club_pngSize = 14121;
 
     extern const char*   icon_png;
     const int            icon_pngSize = 564243;

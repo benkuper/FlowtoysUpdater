@@ -24,10 +24,13 @@ public:
 	~PropConnectScreen();
 
 	TextButton flashBT;
+	Label helpBT;
 
 	void paint(Graphics &g) override;
 	void resized() override;
 	void reset() override;
+
+	void mouseDown(const MouseEvent &e) override;
 
 	void newMessage(const PropManager::PropManagerEvent &e) override;
 
