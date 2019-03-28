@@ -115,7 +115,7 @@ after_success:
     chmod +x FlowtoysUpdater-linux-x64-$SUFFIX.AppImage;
     tar -czvf FlowtoysUpdater-linux-x64-$SUFFIX.tar.gz FlowtoysUpdater-linux-x64-$SUFFIX.AppImage;
     echo 'Uploading $SUFFIX ...';
-    curl --verbose --progress-bar --ipv4 --connect-timeout 8 --max-time 120 --retry 128 --ftp-pasv -T FlowtoysUpdater-linux-x64-$SUFFIX.tar.gz -u $FTP_USER:$FTP_PASSWORD ftp://flow-toys.com/app/;
+    curl --verbose --progress-bar --ipv4 --connect-timeout 8 --max-time 120 --retry 128 --ftp-pasv -T FlowtoysUpdater-linux-x64-$SUFFIX.tar.gz -u $FTP_USER:$FTP_PASSWORD ftp://flow-toys.com/app/;"
   else
     echo "Zipping and Updating..."
     cd /Users/travis/build/benkuper/FlowtoysUpdater/Builds/MacOSX/build/$MAKECONF
