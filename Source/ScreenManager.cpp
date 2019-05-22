@@ -28,7 +28,7 @@ ScreenManager::ScreenManager() :
 
 	setScreen(screens[0]);
 
-	addAndMakeVisible(prevBT);
+	addChildComponent(prevBT);
 	prevBT.addListener(this);
 
 	for (auto &s : screens) s->addScreenListener(this);

@@ -35,7 +35,7 @@ ifeq ($(CONFIG),Debug)
     TARGET_ARCH := -m64
   endif
 
-  JUCE_CPPFLAGS := $(DEPFLAGS) -DLINUX=1 -DDEBUG=1 -D_DEBUG=1 -DJUCER_LINUX_MAKE_6D53C8B4=1 -DJUCE_APP_VERSION=1.0.15 -DJUCE_APP_VERSION_HEX=0x1000f $(shell pkg-config --cflags freetype2 x11 xext xinerama libcurl) -pthread -I../../JuceLibraryCode -I../../../JUCE/modules -I../../External/hidapi/include -I../../External/libusb/include/libusb-1.0 $(CPPFLAGS)
+  JUCE_CPPFLAGS := $(DEPFLAGS) -DLINUX=1 -DDEBUG=1 -D_DEBUG=1 -DJUCER_LINUX_MAKE_6D53C8B4=1 -DJUCE_APP_VERSION=1.0.16 -DJUCE_APP_VERSION_HEX=0x10010 $(shell pkg-config --cflags freetype2 x11 xext xinerama libcurl) -pthread -I../../JuceLibraryCode -I../../../JUCE/modules -I../../External/hidapi/include -I../../External/libusb/include/libusb-1.0 $(CPPFLAGS)
   JUCE_CPPFLAGS_APP := -DJucePlugin_Build_VST=0 -DJucePlugin_Build_VST3=0 -DJucePlugin_Build_AU=0 -DJucePlugin_Build_AUv3=0 -DJucePlugin_Build_RTAS=0 -DJucePlugin_Build_AAX=0 -DJucePlugin_Build_Standalone=0 -DJucePlugin_Build_Unity=0
   JUCE_TARGET_APP := FlowtoysUpdater
 
@@ -56,7 +56,7 @@ ifeq ($(CONFIG),Release)
     TARGET_ARCH := -m64
   endif
 
-  JUCE_CPPFLAGS := $(DEPFLAGS) -DLINUX=1 -DNDEBUG=1 -DJUCER_LINUX_MAKE_6D53C8B4=1 -DJUCE_APP_VERSION=1.0.15 -DJUCE_APP_VERSION_HEX=0x1000f $(shell pkg-config --cflags freetype2 x11 xext xinerama libcurl) -pthread -I../../JuceLibraryCode -I../../../JUCE/modules -I../../External/hidapi/include -I../../External/libusb/include/libusb-1.0 $(CPPFLAGS)
+  JUCE_CPPFLAGS := $(DEPFLAGS) -DLINUX=1 -DNDEBUG=1 -DJUCER_LINUX_MAKE_6D53C8B4=1 -DJUCE_APP_VERSION=1.0.16 -DJUCE_APP_VERSION_HEX=0x10010 $(shell pkg-config --cflags freetype2 x11 xext xinerama libcurl) -pthread -I../../JuceLibraryCode -I../../../JUCE/modules -I../../External/hidapi/include -I../../External/libusb/include/libusb-1.0 $(CPPFLAGS)
   JUCE_CPPFLAGS_APP := -DJucePlugin_Build_VST=0 -DJucePlugin_Build_VST3=0 -DJucePlugin_Build_AU=0 -DJucePlugin_Build_AUv3=0 -DJucePlugin_Build_RTAS=0 -DJucePlugin_Build_AAX=0 -DJucePlugin_Build_Standalone=0 -DJucePlugin_Build_Unity=0
   JUCE_TARGET_APP := FlowtoysUpdater
 
