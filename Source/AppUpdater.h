@@ -86,11 +86,11 @@ public:
 	bool isInstaller;
 	String fileExtension;
 
-	ScopedPointer<UpdateDialogWindow> updateWindow;
+	std::unique_ptr<UpdateDialogWindow> updateWindow;
 	
 	float progression;
 
-	ScopedPointer<URL::DownloadTask> downloadTask;
+	std::unique_ptr<URL::DownloadTask> downloadTask;
 
 	void setURLs(URL _updateURL, String _downloadURLBase, String filePrefix);
 

@@ -17,7 +17,7 @@
 
 enum PropType {NOTSET, CAPSULE, CLUB, TYPE_MAX };
 const String typeStrings[TYPE_MAX]{ "NotSet", "Capsule", "Club" };
-const String displayNames[TYPE_MAX]{"NotSet", "Capsule 2.0", "Vision Club" };
+const String displayNames[TYPE_MAX]{"NotSet", "Capsule 2.0", "Vision" };
 const String fwIdentStrings[TYPE_MAX]{ "notset", "capsule", "club" };
 const int productIds[TYPE_MAX]{0, 0x1000, 0x1001 };
 const int flowtoysVID = 0xF107;

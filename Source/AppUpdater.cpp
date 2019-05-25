@@ -68,9 +68,9 @@ void AppUpdater::showDialog(String title, String msg, String changelog)
 
 	progression = 0;
 
-	updateWindow = new UpdateDialogWindow(msg, changelog);
+	updateWindow.reset(new UpdateDialogWindow(msg, changelog));
 	DialogWindow::LaunchOptions dw;
-	dw.content.set(updateWindow, false);
+	dw.content.set(updateWindow.get(), false);
 	dw.dialogTitle = title;
 	dw.useNativeTitleBar = false;
 	dw.escapeKeyTriggersCloseButton = true;
@@ -100,7 +100,7 @@ void AppUpdater::downloadUpdate()
 	URL downloadURL = URL(downloadURLBase + URL::addEscapeChars(downloadingFileName, false));
 
 	DBG("Downloading " + downloadURL.toString(false) + "...");
-	downloadTask = downloadURL.downloadToFile(targetFile, "", this);
+	downloadTask.reset(downloadURL.downloadToFile(targetFile, "", this));
 
 	if (downloadTask == nullptr)
 	{
@@ -119,7 +119,7 @@ void AppUpdater::run()
 
 	StringPairArray responseHeaders;
 	int statusCode = 0;
-	ScopedPointer<InputStream> stream(updateURL.createInputStream(false, nullptr, nullptr, String(),
+	std::unique_ptr<InputStream> stream(updateURL.createInputStream(false, nullptr, nullptr, String(),
 		2000, // timeout in millisecs
 		&responseHeaders, &statusCode));
 

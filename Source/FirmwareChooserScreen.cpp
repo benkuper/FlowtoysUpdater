@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-    FirmwareChooserScreen.cpp
-    Created: 4 Sep 2018 12:39:25pm
-    Author:  Ben
+	FirmwareChooserScreen.cpp
+	Created: 4 Sep 2018 12:39:25pm
+	Author:  Ben
 
   ==============================================================================
 */
@@ -25,14 +25,14 @@ FirmwareChooserScreen::FirmwareChooserScreen() :
 	fwChooser.addListener(this);
 
 	helpBT.setColour(helpBT.textColourId, Colours::lightblue);
-	helpBT.setText("Don't know which firmware to download? Get some help by clicking here", dontSendNotification);
+	helpBT.setText("click here for help with firmware selection", dontSendNotification);
 	helpBT.setJustificationType(Justification::centred);
 	addAndMakeVisible(&helpBT);
 	helpBT.setMouseCursor(MouseCursor::PointingHandCursor);
 	helpBT.addMouseListener(this, false);
 
 	FirmwareManager::getInstance()->addAsyncManagerListener(this);
-	
+
 }
 
 FirmwareChooserScreen::~FirmwareChooserScreen()
@@ -42,7 +42,7 @@ FirmwareChooserScreen::~FirmwareChooserScreen()
 void FirmwareChooserScreen::updateVisibility()
 {
 	bool v = FirmwareManager::getInstance()->firmwaresAreLoaded();
-	
+
 	fwChooser.clear();
 	fwChooser.setTextWhenNoChoicesAvailable("No firmware available, are you connected to internet?");
 	fwList = FirmwareManager::getInstance()->getFirmwaresForType(PropManager::getInstance()->selectedType);
@@ -51,15 +51,15 @@ void FirmwareChooserScreen::updateVisibility()
 	int indexToSelect = -1;
 	for (int i = 0; i < fwList.size(); i++)
 	{
-		bool isLocal = FirmwareManager::getInstance()->localFirmware == fwList[i];
+		bool isLocal = FirmwareManager::getInstance()->localFirmware.get() == fwList[i];
 		String label = fwList[i]->infos;
 		if (isLocal) label += " (local)";
 		fwChooser.addItem(label, i + 1);
 		if (isLocal) indexToSelect = i + 1;
-		
+
 	}
-    fwChooser.setTextWhenNothingSelected(fwList.size() > 0?fwList[0]->infos:"No firmware");
-    
+	fwChooser.setTextWhenNothingSelected(fwList.size() > 0 ? fwList[0]->infos : "No firmware");
+
 	selectBT.setVisible(v);
 	fwChooser.setVisible(v);
 	selectBT.setEnabled(fwChooser.getNumItems() > 0);
@@ -71,7 +71,7 @@ void FirmwareChooserScreen::updateVisibility()
 	repaint();
 }
 
-void FirmwareChooserScreen::paint(Graphics & g)
+void FirmwareChooserScreen::paint(Graphics& g)
 {
 	bool loaded = FirmwareManager::getInstance()->firmwaresAreLoaded();
 	bool errored = FirmwareManager::getInstance()->errored;
@@ -86,25 +86,32 @@ void FirmwareChooserScreen::paint(Graphics & g)
 	{
 		g.setColour(Colours::lightgrey);
 		//s = "leave as \"auto update\" for the latest version\nor select your preferred firmware.";
-		s = "please select the firmware of your choice.\n \
-for the most recent version, select the highest version number.\n \
-for poi and staff select \"spin(pixel count)\" \n \
-for staves, the pixel count is 1 / 2 of the staff. \n \
-to ensure the latest versions please restart the updater.";
+
+		if (PropManager::getInstance()->selectedType == PropType::CLUB) s = "- ";
+
+		s += "select your firmware. to ensure the latest version, restart the updater, then choose the one marked \"CURRENT\"";
+
+		if (PropManager::getInstance()->selectedType == PropType::CLUB)
+		{
+			s += "\n-for clubs, select your club type, for all other props select \"spin\" \
+				\nmake sure to select the correct pixel count for your prop. \
+				\n- you should be able to see the individual LEDs when your prop is on, you can count the number of pixels down the length. for staves it is 1 / 2 the total pixels. \
+				\n- NOTE: only count 1 column of leds down the length, not every LED around the prop.there are 2 - 4 LEDs per pixel down the length.";
+		}
 	}
 
-	g.drawFittedText(s, getLocalBounds().removeFromTop(100).reduced(40, 10), Justification::centred, 5, false);
-	
+	g.drawFittedText(s, getLocalBounds().removeFromTop(200).reduced(40, 10), Justification::centred, 5, false);
+
 }
 
 void FirmwareChooserScreen::reset()
 {
 	if (!FirmwareManager::getInstance()->firmwaresAreLoaded() || FirmwareManager::getInstance()->errored) FirmwareManager::getInstance()->initLoad();
-	
+
 	updateVisibility();
 }
 
-void FirmwareChooserScreen::mouseDown(const MouseEvent & e)
+void FirmwareChooserScreen::mouseDown(const MouseEvent& e)
 {
 	AppScreen::mouseDown(e);
 
@@ -118,37 +125,38 @@ void FirmwareChooserScreen::mouseDown(const MouseEvent & e)
 void FirmwareChooserScreen::resized()
 {
 	Rectangle<int> r = getLocalBounds();
-	Rectangle<int> br = r.removeFromBottom(100);
+	Rectangle<int> br = r.removeFromBottom(60);
 	selectBT.setBounds(br.withSizeKeepingCentre(100, 40).translated(0, -50));
 	chooseFileBT.setBounds(br.withSizeKeepingCentre(120, 40));
-	helpBT.setBounds(r.withSizeKeepingCentre(450, 30));
-	fwChooser.setBounds(r.withSizeKeepingCentre(450, 30).translated(0,30));
+	helpBT.setBounds(r.withSizeKeepingCentre(450, 30).translated(0,30));
+	fwChooser.setBounds(r.withSizeKeepingCentre(450, 30).translated(0, 80));
 }
 
-void FirmwareChooserScreen::newMessage(const FirmwareManager::FirmwareManagerEvent &)
+void FirmwareChooserScreen::newMessage(const FirmwareManager::FirmwareManagerEvent&)
 {
 	updateVisibility();
 }
 
-void FirmwareChooserScreen::comboBoxChanged(ComboBox *)
+void FirmwareChooserScreen::comboBoxChanged(ComboBox*)
 {
 }
 
-void FirmwareChooserScreen::buttonClicked(Button * b)
+void FirmwareChooserScreen::buttonClicked(Button* b)
 {
 	if (b == &selectBT)
 	{
 		int index = fwChooser.getSelectedId();
-		FirmwareManager::getInstance()->selectedFirmware = (index <= 0 ? fwList[0] : fwList[index-1]);
+		FirmwareManager::getInstance()->selectedFirmware = (index <= 0 ? fwList[0] : fwList[index - 1]);
 		screenListeners.call(&ScreenListener::screenFinish, this);
-	} else if (b == &chooseFileBT)
+	}
+	else if (b == &chooseFileBT)
 	{
-		FileChooser fc("Choose a firmware file",File(),"*.fwimg");
+		FileChooser fc("Choose a firmware file", File(), "*.fwimg");
 		bool result = fc.browseForFileToOpen();
 		if (result)
 		{
 			File f = fc.getResult();
-			bool fResult =FirmwareManager::getInstance()->setLocalFirmware(f, PropManager::getInstance()->selectedType);
+			bool fResult = FirmwareManager::getInstance()->setLocalFirmware(f, PropManager::getInstance()->selectedType);
 			if (!fResult)
 			{
 				AlertWindow::showMessageBox(AlertWindow::WarningIcon, "Bad file", "The file you chose is either corrupted or not a firmware for " + displayNames[PropManager::getInstance()->selectedType] + ".", "OK");

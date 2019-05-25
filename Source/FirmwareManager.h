@@ -62,7 +62,7 @@ public:
 	Firmware * selectedFirmware;
 
 
-	ScopedPointer<Firmware> localFirmware;
+	std::unique_ptr<Firmware> localFirmware;
 
 	void initLoad();
 	void clearFirmwares();

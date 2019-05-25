@@ -9,6 +9,7 @@
 */
 
 #include "PropConnectScreen.h"
+#include "FirmwareManager.h"
 
 PropConnectScreen::PropConnectScreen() :
 	AppScreen("Connect Props", CONNECT),
@@ -21,7 +22,7 @@ PropConnectScreen::PropConnectScreen() :
 	flashBT.setEnabled(false);
 
 	helpBT.setColour(helpBT.textColourId, Colours::lightblue);
-	helpBT.setText("Having troubles connecting your prop? Click here to find help or give feedback. Thank you!", dontSendNotification);
+	helpBT.setText("click here for detailed instructions and troubleshooting", dontSendNotification);
 	helpBT.setJustificationType(Justification::centred);
 	addAndMakeVisible(&helpBT);
 	helpBT.setMouseCursor(MouseCursor::PointingHandCursor);
@@ -36,10 +37,31 @@ PropConnectScreen::~PropConnectScreen()
 void PropConnectScreen::paint(Graphics & g)
 {
 	Rectangle<int> r = getLocalBounds();
+	Rectangle<int> tr = r.removeFromTop(40);
 	Rectangle<int> fr = r.removeFromBottom(100);
 
 	int numProps = PropManager::getInstance()->props.size();
-	String s = numProps == 0?"connect all the props to be updated via USB.\nyou can use a USB hub to update multiple compatible props at once.":String(numProps) + " " + displayNames[(int)(PropManager::getInstance()->selectedType)].toLowerCase() + " connected:\n";
+	String s = "";
+	if (numProps == 0)
+	{
+		if (PropManager::getInstance()->selectedType == PropType::CAPSULE)
+		{
+			s = "updating multiple capsules? you can use a USB hub to update them all at once. \
+				\n- connect them all via USB now";
+		}
+		else
+		{
+			s = "updating multiple vision props? if they are the same/take the same firmware, \
+				\nyou can use a USB hub to update them all at once. \
+				\n- connect them all via USB now";
+		}
+	}
+	else
+	{
+		s = String(numProps) + " " + displayNames[(int)(PropManager::getInstance()->selectedType)].toLowerCase() + " connected:\n";
+
+	}
+
 	int index = 0;
 	for (auto &p : PropManager::getInstance()->props)
 	{
@@ -50,6 +72,7 @@ void PropConnectScreen::paint(Graphics & g)
 
 
 	g.setColour(Colours::lightgrey);
+	g.drawFittedText("Selected Firmware : " + FirmwareManager::getInstance()->selectedFirmware->infos, tr, Justification::centred, 1);
 	g.drawFittedText(s, r, Justification::centred, numProps+1);
 }
 

@@ -93,7 +93,7 @@ void Prop::sendGetStatus()
 	MemoryOutputStream s;
 	s.writeInt(Command::GetStatus);
 	sendPacket(s);
-	ScopedPointer<MemoryInputStream> result = readResponse();
+	std::unique_ptr<MemoryInputStream> result(readResponse());
 
 	if (result != nullptr)
 	{
@@ -116,7 +116,7 @@ void Prop::sendGetVersion(Subject subject)
 	s.writeInt(subject);
 	sendPacket(s);
 
-	ScopedPointer<MemoryInputStream> result = readResponse();
+	std::unique_ptr<MemoryInputStream> result(readResponse());
 
 	if (result != nullptr)
 	{

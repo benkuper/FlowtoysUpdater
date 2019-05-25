@@ -78,7 +78,7 @@ Firmware * FirmwareManager::getFirmwareForFile(File f)
 
 
 	//data
-	ScopedPointer<InputStream> dataStream = zip.createStreamForEntry(*data);
+	std::unique_ptr<InputStream> dataStream(zip.createStreamForEntry(*data));
 	int numBytesToSend = (int)dataStream->getTotalLength();
 	float numDataPackets = (float)(ceilf(numBytesToSend*1.0f / DATA_PACKET_MAX_LENGTH));
 	int totalBytesToSend = (int)(numDataPackets * DATA_PACKET_MAX_LENGTH);
@@ -87,7 +87,7 @@ Firmware * FirmwareManager::getFirmwareForFile(File f)
 	dataStream->readIntoMemoryBlock(fwData);
 
 
-	ScopedPointer<InputStream> metaStream = zip.createStreamForEntry(*meta);
+	std::unique_ptr<InputStream> metaStream(zip.createStreamForEntry(*meta));
 	var fwMeta = JSON::fromString(metaStream->readEntireStreamAsString());
 
 	if (!fwMeta.isObject())
@@ -131,7 +131,7 @@ bool FirmwareManager::setLocalFirmware(File f, PropType expectedType)
 		return false;
 	}
 
-	localFirmware = fw;
+	localFirmware.reset(fw);
 	return fw != nullptr;
 }
 
@@ -151,7 +151,7 @@ Array<Firmware *> FirmwareManager::getFirmwaresForType(PropType type)
 		if (f->pid == targetPID) result.add(f);
 	}
 
-	if (localFirmware != nullptr && localFirmware->type == type) result.add(localFirmware);
+	if (localFirmware != nullptr && localFirmware->type == type) result.add(localFirmware.get());
 
 	return result;
 }
@@ -164,7 +164,7 @@ void FirmwareManager::run()
 	int statusCode = 0;
 
 	URL updateURL(remoteHost + "firmwares.php");
-	ScopedPointer<InputStream> stream(updateURL.createInputStream(false, nullptr, nullptr, String(),
+	std::unique_ptr<InputStream> stream(updateURL.createInputStream(false, nullptr, nullptr, String(),
 		2000, // timeout in millisecs
 		&responseHeaders, &statusCode));
 #if JUCE_WINDOWS
