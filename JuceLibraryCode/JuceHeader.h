@@ -34,7 +34,7 @@ namespace ProjectInfo
 {
     const char* const  projectName    = "FlowtoysUpdater";
     const char* const  companyName    = "";
-    const char* const  versionString  = "1.0.17";
-    const int          versionNumber  = 0x10011;
+    const char* const  versionString  = "1.0.18";
+    const int          versionNumber  = 0x10012;
 }
 #endif

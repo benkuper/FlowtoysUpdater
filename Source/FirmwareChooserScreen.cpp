@@ -25,7 +25,7 @@ FirmwareChooserScreen::FirmwareChooserScreen() :
 	fwChooser.addListener(this);
 
 	helpBT.setColour(helpBT.textColourId, Colours::lightblue);
-	helpBT.setText("click here for help with firmware selection", dontSendNotification);
+	helpBT.setText("need help? click here.", dontSendNotification);
 	helpBT.setJustificationType(Justification::centred);
 	addAndMakeVisible(&helpBT);
 	helpBT.setMouseCursor(MouseCursor::PointingHandCursor);
@@ -87,16 +87,17 @@ void FirmwareChooserScreen::paint(Graphics& g)
 		g.setColour(Colours::lightgrey);
 		//s = "leave as \"auto update\" for the latest version\nor select your preferred firmware.";
 
-		if (PropManager::getInstance()->selectedType == PropType::CLUB) s = "- ";
-
-		s += "select your firmware. to ensure the latest version, restart the updater, then choose the one marked \"CURRENT\"";
+		s += "SELECT YOUR FIRMWARE \
+			\nto ensure the latest version, restart the updater, then choose the version marked \"CURRENT\"";
 
 		if (PropManager::getInstance()->selectedType == PropType::CLUB)
 		{
-			s += "\n-for clubs, select your club type, for all other props select \"spin\" \
-				\nmake sure to select the correct pixel count for your prop. \
-				\n- you should be able to see the individual LEDs when your prop is on, you can count the number of pixels down the length. for staves it is 1 / 2 the total pixels. \
-				\n- NOTE: only count 1 column of leds down the length, not every LED around the prop.there are 2 - 4 LEDs per pixel down the length.";
+			s += "\nfor clubs, select your club type* for all other props, select spinXY(XY=pixel count) \
+\n\n\nTO FIND THE CORRECT PIXEL COUNT FOR YOUR PROP \
+\nturn on your prop + count the number of pixels down the length \
+\nfor staves it is 1/2 the total pixels \
+\nonly count 1 column of leds down the length \
+\ndon't count every LED around the prop - there are 2-4 LEDs per pixel";
 		}
 	}
 
@@ -128,7 +129,7 @@ void FirmwareChooserScreen::resized()
 	Rectangle<int> br = r.removeFromBottom(60);
 	selectBT.setBounds(br.withSizeKeepingCentre(100, 40).translated(0, -50));
 	chooseFileBT.setBounds(br.withSizeKeepingCentre(120, 40));
-	helpBT.setBounds(r.withSizeKeepingCentre(450, 30).translated(0,30));
+	helpBT.setBounds(r.withSizeKeepingCentre(450, 30).translated(0,40));
 	fwChooser.setBounds(r.withSizeKeepingCentre(450, 30).translated(0, 80));
 }
 

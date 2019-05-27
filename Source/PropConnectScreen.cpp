@@ -22,7 +22,7 @@ PropConnectScreen::PropConnectScreen() :
 	flashBT.setEnabled(false);
 
 	helpBT.setColour(helpBT.textColourId, Colours::lightblue);
-	helpBT.setText("click here for detailed instructions and troubleshooting", dontSendNotification);
+	helpBT.setText("need help? click here.", dontSendNotification);
 	helpBT.setJustificationType(Justification::centred);
 	addAndMakeVisible(&helpBT);
 	helpBT.setMouseCursor(MouseCursor::PointingHandCursor);
@@ -46,14 +46,15 @@ void PropConnectScreen::paint(Graphics & g)
 	{
 		if (PropManager::getInstance()->selectedType == PropType::CAPSULE)
 		{
-			s = "updating multiple capsules? you can use a USB hub to update them all at once. \
-				\n- connect them all via USB now";
+			s = "updating multiple capsules? \
+\nyou can use a USB hub to update them all at once! \
+\nconnect them all via USB, then click the upload button below";
 		}
 		else
 		{
-			s = "updating multiple vision props? if they are the same/take the same firmware, \
-				\nyou can use a USB hub to update them all at once. \
-				\n- connect them all via USB now";
+			s = "updating multiple vision props? \
+\nif they are the same props/use the same firmware, you can use a USB hub to update them all at once. \
+\nconnect them all via USB, then click the upload button below";
 		}
 	}
 	else
@@ -71,8 +72,8 @@ void PropConnectScreen::paint(Graphics & g)
 	}
 
 
-	g.setColour(Colours::lightgrey);
-	g.drawFittedText("Selected Firmware : " + FirmwareManager::getInstance()->selectedFirmware->infos, tr, Justification::centred, 1);
+	g.setColour(Colours::lightgrey); 
+	g.drawFittedText("firmware to be uploaded:\n" + FirmwareManager::getInstance()->selectedFirmware->infos, tr, Justification::centred, 2);
 	g.drawFittedText(s, r, Justification::centred, numProps+1);
 }
 
