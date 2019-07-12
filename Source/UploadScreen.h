@@ -24,6 +24,8 @@ public:
 
 	String text;
 	float progression;
+	int numSuccess;
+	int numErrored;
 	void reset() override;
 
 	void paint(Graphics &g) override;

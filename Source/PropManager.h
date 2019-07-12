@@ -13,7 +13,6 @@
 #include "Prop.h"
 
 class PropManager :
-	public Thread,
 	public Timer,
 	public Prop::AsyncListener
 {
@@ -27,11 +26,14 @@ public:
 
 	OwnedArray<Prop> props;
 
+	Array<float> flashProgresses;
+	Array<bool> flashSuccess;
+
 	//Settings from user choices
 	//bool shouldCheck;
 	PropType selectedType;
 	
-	bool isFlashing();
+	bool isFlashing;
 
 	void setSelectedType(PropType t);
 
@@ -47,12 +49,12 @@ public:
 
 	void newMessage(const Prop::PropEvent &e) override;
 
+	void computeProgression();
+
 	void resetPropToBootloader(hid_device_info * deviceInfo);
 
 	void flash();
 
-	// Inherited via Thread
-	virtual void run() override;
 
 	// Inherited via Timer
 	virtual void timerCallback() override;
@@ -60,12 +62,14 @@ public:
 	class PropManagerEvent
 	{
 	public:
-		enum Type { PROPS_CHANGED, FLASHING_PROGRESS, FLASHING_ERROR };
+		enum Type { PROPS_CHANGED, FLASHING_PROGRESS, FLASHING_FINISHED };
 		PropManagerEvent(Type type) : type(type) {}
-		PropManagerEvent(Type type, float progress) : type(type), progress(progress) {}
+		PropManagerEvent(Type type, float progress, int numFlashed = 0, int numErrored = 0) : type(type), progress(progress), numFlashed(numFlashed), numErrored(numErrored) {}
 
 		Type type;
 		float progress;
+		int numFlashed;
+		int numErrored;
 	};
 
 	QueuedNotifier<PropManagerEvent> queuedNotifier;

@@ -15,14 +15,16 @@
 #include "PropConstants.h"
 #include "QueuedNotifier.h"
 
-class Prop
+class Prop :
+	public Thread
 {
 public:
 	Prop(StringRef productString, StringRef serial = "", hid_device * device = nullptr, PropType type = PropType::CAPSULE, int vid = 0, int pid = 0, const wchar_t * serialNumber = 0);
 	~Prop();
 
-	enum FlashState { READY, FLASHING, SUCCESS, ERROR };
-    
+	//enum FlashState { READY, FLASHING, SUCCESS, ERROR };
+	//EnumParameter* flashState;
+
     String productString;
     
 	//DeviceInfo from hidapi
@@ -82,11 +84,15 @@ public:
 	bool bootloaderActive;
 	bool appActive;
 
-
+	//flashing
+	MemoryBlock* dataBlock;
+	int totalBytesToSend;
+	int numNoResponses; //check disconnected
 	
 	// Threaded call from CapsuleEngine
-	bool flash(MemoryBlock * b, int totalBytesToSend);
+	void flash(MemoryBlock * b, int totalBytesToSend);
 
+	void run() override;
 
 	void setProgression(float value);
 
@@ -104,7 +110,7 @@ public:
 	class PropEvent
 	{
 	public:
-		enum Type { FLASHING_PROGRESS };
+		enum Type { FLASHING_PROGRESS, FLASH_ERROR, FLASH_SUCCESS };
 		PropEvent(Prop * prop, Type type) : prop(prop), type(type) {}
 		PropEvent(Prop * prop, Type type, float progress) : prop(prop), type(type), progress(progress) {}
 

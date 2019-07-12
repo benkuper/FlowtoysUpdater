@@ -15,7 +15,8 @@
 
 
 Prop::Prop(StringRef productString, StringRef serial, hid_device * device, PropType type, int vid, int pid, const wchar_t * serialNumber) :
-    productString(productString),
+	Thread("Prop"),
+	productString(productString),
 	type(type),
 	serial(serial),
 	dVid(vid),
@@ -26,6 +27,7 @@ Prop::Prop(StringRef productString, StringRef serial, hid_device * device, PropT
 	deviceStatus(NotSet),
 	progression(0),
 	infos("[Not set]"),
+	numNoResponses(0),
     queuedNotifier(50)
 {
 	
@@ -48,6 +50,8 @@ Prop::Prop(StringRef productString, StringRef serial, hid_device * device, PropT
 
 Prop::~Prop()
 {
+	signalThreadShouldExit();
+	waitForThreadToExit(100);
 	hid_close(device);
 }
 
@@ -80,7 +84,7 @@ void Prop::sendUpdate(int totalBytesToSend)
 	sendPacket(s);
 }
 
-void Prop::sendData(const char * data, int length)
+void Prop::sendData(const char* data, int length)
 {
 	MemoryOutputStream s;
 	s.writeInt(Command::Data);
@@ -98,14 +102,19 @@ void Prop::sendGetStatus()
 	if (result != nullptr)
 	{
 		uint8_t cmd = result->readByte();
-		for (int i = 0; i<3; i++) result->readByte(); //2 useless bytes
+		for (int i = 0; i < 3; i++) result->readByte(); //2 useless bytes
 		deviceAckStatus = result->readInt();
 		deviceStatus = (Status)result->readByte();
 
 		statusRawMessage = result->readString();
 
-
 		DBG("Status response : " << cmd << " / " << deviceAckStatus << " / " << deviceStatus << " : " << statusRawMessage);
+	}
+	else
+	{
+		numNoResponses++;
+		if (numNoResponses >= 3) deviceStatus = Error;
+		DBG("NO RESPONSE ! ");
 	}
 }
 
@@ -126,7 +135,7 @@ void Prop::sendGetVersion(Subject subject)
 
 		if (subject == App) appActive = result->readByte() == 1;
 		else bootloaderActive = result->readByte() == 1;
-        
+
 		for (int i = 0; i < 2; i++) result->readByte(); //2 bytes padding
 
 		int _vid = result->readShort();
@@ -136,7 +145,14 @@ void Prop::sendGetVersion(Subject subject)
 		int64 _fw_date = result->readInt();
 		char git_rev[8];
 		result->read(git_rev, 8);
-		String _gitRevString = String(git_rev);
+
+		String _gitRevString = "unknown";
+		if (CharPointer_ASCII::isValidString(git_rev, std::numeric_limits<int>::max()))
+		{
+			_gitRevString= String(git_rev);
+		}
+		
+
 
 		if (subject == Bootloader)
 		{
@@ -156,7 +172,11 @@ void Prop::sendGetVersion(Subject subject)
 
 		char fw_ident[20];
 		result->read(fw_ident, 20);
-		String fwString = String(fw_ident);
+		String fwString = "unknown";
+		if (CharPointer_ASCII::isValidString(fw_ident, std::numeric_limits<int>::max()))
+		{
+			fwString=  String(fw_ident);
+		}
 
 		if (subject == App) fwIdentString = fwString;
 
@@ -214,13 +234,19 @@ MemoryInputStream * Prop::readResponse()
 	}
 }
 
-bool Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
+void Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
 {
-	jassert(!MessageManager::getInstance()->isThisTheMessageThread());
+	signalThreadShouldExit();
+	waitForThreadToExit(100);
 
-	Thread * thread = Thread::getCurrentThread();
+	this->dataBlock= dataBlock;
+	this->totalBytesToSend = totalBytesToSend;
 
+	startThread();
+}
 
+void Prop::run()
+{
 	const int bufferSize = 64; //fixed for bootloader
 
 	setProgression(0);
@@ -239,13 +265,13 @@ bool Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
 
 		while (deviceStatus != Idle)
 		{
-			thread->sleep(10);
+			sleep(10);
 			sendGetStatus();
 		}
 	}
 
 	sendUpdate(totalBytesToSend);
-	thread->sleep(10);
+	sleep(10);
 
 
 	DBG("Erasing...");
@@ -253,21 +279,26 @@ bool Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
 	int sizeToErase = type == CAPSULE ? 51200 : 113664; //Size of the data to erase varies depending on the prop type
 
 	int index = 0;
-	while (!thread->threadShouldExit())
+
+	while (!threadShouldExit())
 	{
 		sendGetStatus();
-		thread->sleep(1);
+		sleep(1);
 
 		if (deviceStatus == Error)
 		{
 			DBG("ERROR ! " << statusRawMessage);
 			//flashState->setValueWithData(ERROR);
-			return false;
-		} else if (deviceStatus == EraseBusy)
+			progression = 1;
+			queuedNotifier.addMessage(new PropEvent(this, PropEvent::FLASH_ERROR, progression));
+			return;
+		}
+		else if (deviceStatus == EraseBusy)
 		{
 			//Erasing..
 			DBG("Erasing...");
-		} else if (deviceStatus == ProgramIdle)
+		}
+		else if (deviceStatus == ProgramIdle)
 		{
 			DBG("Erase complete.");
 			break;
@@ -279,9 +310,9 @@ bool Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
 			MessageManagerLock mmLock;
 			if (mmLock.lockWasGained())
 			{
-				setProgression(jmin(deviceAckStatus*.5f / sizeToErase, .5f));
+				setProgression(jmin(deviceAckStatus * .5f / sizeToErase, .5f));
 				//progression->queuedNotifier.triggerAsyncUpdate();
-				thread->sleep(1);
+				sleep(1);
 			}
 		}
 		index++;
@@ -293,16 +324,20 @@ bool Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
 	int currentDataOffset = 0;
 
 
-	while (!thread->threadShouldExit())
+	while (!threadShouldExit())
 	{
 		sendGetStatus();
 		if (deviceStatus == Error)
 		{
 			DBG("ERROR ! " << statusRawMessage);
 			//flashState->setValueWithData(ERROR);
-			return false;
+			progression = 1;
+			queuedNotifier.addMessage(new PropEvent(this, PropEvent::FLASH_ERROR, progression)); 
+			//return false;
+			return;
 
-		} else if (deviceStatus == ProgramIdle && deviceAckStatus < totalBytesToSend)
+		}
+		else if (deviceStatus == ProgramIdle && deviceAckStatus < totalBytesToSend)
 		{
 			//DBG("Sending with packet #" << currentPacket<<", offset : " << currentDataOffset << " (ackStatus : " << deviceAckStatus << ")");
 			char data[DATA_PACKET_MAX_LENGTH];
@@ -313,7 +348,8 @@ bool Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
 			currentDataOffset = deviceAckStatus;
 			currentPacket++;
 
-		} else if (deviceStatus == ProgramDone)
+		}
+		else if (deviceStatus == ProgramDone)
 		{
 			//Out of the loop
 			break;
@@ -327,17 +363,20 @@ bool Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
 				DBG("Progression : " << progression);
 				setProgression(.5f + deviceAckStatus * .5f / totalBytesToSend);
 				//progression->queuedNotifier.triggerAsyncUpdate();
-				thread->sleep(1);
+				sleep(1);
 			}
 		}
 	}
 
-	DBG("Flashing done !");
-    sendAppReset(Subject::App); 
-	//flashState->setValueWithData(SUCCESS);
-	setProgression(1);
+	progression = 1;
 
-	return true;
+	if (!threadShouldExit())
+	{
+		DBG("Flashing done !");
+		sendAppReset(Subject::App);
+		queuedNotifier.addMessage(new PropEvent(this, PropEvent::FLASH_SUCCESS, progression));
+	}
+	
 }
 
 void Prop::setProgression(float value)

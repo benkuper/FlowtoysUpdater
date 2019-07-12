@@ -12,7 +12,9 @@
 
 UploadScreen::UploadScreen() :
 	AppScreen("Upload", UPLOAD),
-	progression(0)
+	progression(0),
+	numSuccess(0),
+	numErrored(0)
 {
 	PropManager::getInstance()->addAsyncManagerListener(this);
 }
@@ -32,11 +34,14 @@ void UploadScreen::paint(Graphics & g)
 {
 	g.setColour(Colours::lightgrey);
 	Rectangle<int> r = getLocalBounds().withSizeKeepingCentre(300, 40).translated(0, -60);
-	g.drawFittedText(text, r , Justification::centred, 5);
+	String s = text + "\nprogression : " + String((int)(progression * 100)) + "%, " + String(numSuccess) + " success, " + String(numErrored) + " errored";
+	g.drawFittedText(s, r, Justification::centred, 5);
 	r.translate(0, 60);
 	r.setSize(300, 20);
 	g.fillRoundedRectangle(r.toFloat(), 2);
-	g.setColour(Colours::limegreen);
+	Colour c = Colours::limegreen;
+	if (numErrored > 0) c = progression < 1 ? Colours::orange : Colours::orangered;
+	g.setColour(c);
 	r.setWidth((int)(r.getWidth()*progression));
 	g.fillRoundedRectangle(r.toFloat(), 2);
 }
@@ -44,18 +49,26 @@ void UploadScreen::paint(Graphics & g)
 void UploadScreen::newMessage(const PropManager::PropManagerEvent & e)
 {
 	if (e.type == PropManager::PropManagerEvent::FLASHING_PROGRESS)
+	{	
+		numErrored = e.numErrored;
+		numSuccess = e.numFlashed;
+		progression = e.progress;
+
+		repaint();
+	} else if (e.type == PropManager::PropManagerEvent::FLASHING_FINISHED)
 	{
-		if (e.progress == 1)
+		numErrored = e.numErrored;
+		numSuccess = e.numFlashed;
+
+		if (numErrored > 0)
 		{
-			screenListeners.call(&ScreenListener::screenFinish, this);
-		} else
-		{
-			progression = e.progress;
+			text = "There were errors during uploading.\nPlease unplug, plug again your prop and try uploading again.";
 			repaint();
 		}
-	} else if (e.type == PropManager::PropManagerEvent::FLASHING_ERROR)
-	{
-		text = "There were errors during uploading.\nPlease unplug, plug again your prop and try uploading again.";
-		repaint();
+		else
+		{
+			screenListeners.call(&ScreenListener::screenFinish, this);
+		}
+		
 	}
 }

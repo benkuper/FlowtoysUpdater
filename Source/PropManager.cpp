@@ -15,9 +15,9 @@
 juce_ImplementSingleton(PropManager)
 
 PropManager::PropManager() :
-	Thread("Props"),
 	//shouldCheck(false),
 	selectedType(NOTSET),
+	isFlashing(false),
     queuedNotifier(100)
 {
 	startTimerHz(2);
@@ -25,8 +25,7 @@ PropManager::PropManager() :
 
 PropManager::~PropManager()
 {
-	signalThreadShouldExit();
-	waitForThreadToExit(1000);
+
 }
 
 void PropManager::clear()
@@ -36,7 +35,7 @@ void PropManager::clear()
 
 void PropManager::checkProps()
 {
-	if (isFlashing()) return;
+	if (isFlashing) return;
 	//if (!shouldCheck) return;
 
 	bool changed = false;
@@ -139,10 +138,6 @@ Prop * PropManager::openDevice(hid_device_info * deviceInfo)
 	return cd;
 }
 
-bool PropManager::isFlashing()
-{
-	return isThreadRunning();
-}
 
 void PropManager::setSelectedType(PropType t)
 {
@@ -157,34 +152,6 @@ void PropManager::reset()
 	//shouldCheck = false;
 }
 
-void PropManager::run()
-{
-	//flash
-	//Run the update thread here
-
-	if (props.isEmpty()) {
-		DBG("Nothing to flash");
-		return;
-	}
-
-	bool flashError = false;
-	int i = 0;
-	for (auto &d : props)
-	{
-		if (threadShouldExit()) return;
-		Firmware * f = FirmwareManager::getInstance()->selectedFirmware;
-
-		DBG("Flashing device " << d->infos);
-		bool result = d->flash(&f->data, f->totalBytesToSend);
-		if (!result) flashError = true;
-		i++;
-		sleep(50);
-	}
-
-	if (flashError) queuedNotifier.addMessage(new PropManagerEvent(PropManagerEvent::FLASHING_ERROR));
-	else queuedNotifier.addMessage(new PropManagerEvent(PropManagerEvent::FLASHING_PROGRESS, 1));
-	sleep(500);
-}
 
 void PropManager::timerCallback()
 {
@@ -194,8 +161,6 @@ void PropManager::timerCallback()
 
 
 //Constants
-
-
 
 PropType PropManager::getTypeForProductID(int productID) {
 	switch (productID)
@@ -209,14 +174,47 @@ PropType PropManager::getTypeForProductID(int productID) {
 
 void PropManager::newMessage(const Prop::PropEvent & e)
 {
-	if (e.type == Prop::PropEvent::FLASHING_PROGRESS)
+	switch (e.type)
 	{
-		float totalProgression = 0;
-		for (auto &d : props) totalProgression += d->progression;
-		totalProgression /= props.size();
+	case Prop::PropEvent::FLASHING_PROGRESS:
+		break;
 
-		DBG("Total progression " << totalProgression);
-		queuedNotifier.addMessage(new PropManagerEvent(PropManagerEvent::FLASHING_PROGRESS,  totalProgression));
+	case Prop::PropEvent::FLASH_ERROR:
+		flashSuccess.set(props.indexOf(e.prop), false);
+		break;
+
+	case Prop::PropEvent::FLASH_SUCCESS:
+		flashSuccess.set(props.indexOf(e.prop), true);
+		break;
+	}
+
+	computeProgression();
+}
+
+void PropManager::computeProgression()
+{
+	float totalProgression = 0;
+	int numSuccess = 0;
+	int numErrorred = 0;
+	for (int i = 0; i < props.size(); i++)
+	{
+		totalProgression += props[i]->progression;
+		if (props[i]->progression == 1)
+		{
+			if (flashSuccess[i]) numSuccess++;
+			else numErrorred++;
+		}
+	}
+
+	totalProgression /= props.size();
+
+	DBG("Total progression " << totalProgression << " > success / error : " << numSuccess << " / " << numErrorred);
+	queuedNotifier.addMessage(new PropManagerEvent(PropManagerEvent::FLASHING_PROGRESS, totalProgression, numSuccess, numErrorred));
+
+	if (totalProgression == 1)
+	{
+		queuedNotifier.addMessage(new PropManagerEvent(PropManagerEvent::FLASHING_FINISHED, totalProgression, numSuccess, numErrorred));
+		isFlashing = false;
 	}
 }
 
@@ -241,6 +239,23 @@ void PropManager::resetPropToBootloader(hid_device_info * deviceInfo)
 
 void PropManager::flash()
 {
-	startThread();
+	if (props.isEmpty()) {
+		DBG("Nothing to flash");
+		return;
+	}
+	
+	isFlashing = true;
+
+	flashProgresses.clear();
+
+	for (auto& d : props)
+	{
+		flashProgresses.add(0);
+		Firmware* f = FirmwareManager::getInstance()->selectedFirmware;
+
+		DBG("Flashing device " << d->infos);
+		d->flash(&f->data, f->totalBytesToSend);
+	}
+
 }
 
