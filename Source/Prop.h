@@ -80,6 +80,7 @@ public:
 	//Parameters
 	String infos;
 	float progression;
+	bool isFlashing;
 
 	bool bootloaderActive;
 	bool appActive;

@@ -28,6 +28,7 @@ Prop::Prop(StringRef productString, StringRef serial, hid_device * device, PropT
 	progression(0),
 	infos("[Not set]"),
 	numNoResponses(0),
+	isFlashing(false),
     queuedNotifier(50)
 {
 	
@@ -249,7 +250,9 @@ void Prop::run()
 {
 	const int bufferSize = 64; //fixed for bootloader
 
+	isFlashing = true;
 	setProgression(0);
+
 
 	//sendReset();
 	//sleep(100);
@@ -289,7 +292,8 @@ void Prop::run()
 		{
 			DBG("ERROR ! " << statusRawMessage);
 			//flashState->setValueWithData(ERROR);
-			progression = 1;
+			progression = 0;
+			isFlashing = false;
 			queuedNotifier.addMessage(new PropEvent(this, PropEvent::FLASH_ERROR, progression));
 			return;
 		}
@@ -312,7 +316,7 @@ void Prop::run()
 			{
 				setProgression(jmin(deviceAckStatus * .5f / sizeToErase, .5f));
 				//progression->queuedNotifier.triggerAsyncUpdate();
-				sleep(1);
+				sleep(2);
 			}
 		}
 		index++;
@@ -331,7 +335,8 @@ void Prop::run()
 		{
 			DBG("ERROR ! " << statusRawMessage);
 			//flashState->setValueWithData(ERROR);
-			progression = 1;
+			progression = 0;
+			isFlashing = false;
 			queuedNotifier.addMessage(new PropEvent(this, PropEvent::FLASH_ERROR, progression)); 
 			//return false;
 			return;
@@ -363,19 +368,17 @@ void Prop::run()
 				DBG("Progression : " << progression);
 				setProgression(.5f + deviceAckStatus * .5f / totalBytesToSend);
 				//progression->queuedNotifier.triggerAsyncUpdate();
-				sleep(1);
+				sleep(5);
 			}
 		}
 	}
 
 	progression = 1;
+	isFlashing = false;
 
-	if (!threadShouldExit())
-	{
-		DBG("Flashing done !");
-		sendAppReset(Subject::App);
-		queuedNotifier.addMessage(new PropEvent(this, PropEvent::FLASH_SUCCESS, progression));
-	}
+	DBG("Flashing done !");
+	sendAppReset(Subject::App);
+	queuedNotifier.addMessage(new PropEvent(this, PropEvent::FLASH_SUCCESS, progression));
 	
 }
 

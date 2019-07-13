@@ -198,11 +198,15 @@ void PropManager::computeProgression()
 	int numErrorred = 0;
 	for (int i = 0; i < props.size(); i++)
 	{
-		totalProgression += props[i]->progression;
-		if (props[i]->progression == 1)
+		if (!props[i]->isFlashing)
 		{
+			totalProgression += 1;
 			if (flashSuccess[i]) numSuccess++;
 			else numErrorred++;
+		}
+		else
+		{
+			totalProgression += props[i]->progression;
 		}
 	}
 
