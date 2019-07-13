@@ -54,17 +54,17 @@ before_install:
     gem install xcpretty
     gem install xcpretty-travis-formatter
     pwd
-    echo "Installing packager..."
-    curl -L -o Packages.dmg 'http://s.sudre.free.fr/Software/files/Packages.dmg'
-    hdiutil mount Packages.dmg
-    sudo installer -pkg /Volumes/Packages\ 1.2.4/Install\ Packages.pkg -target /
-    hdiutil detach /Volumes/Packages\ 1.2.4/    
     ls -d */
     cd /Users/travis
     git clone --depth=1 --branch=develop-local https://github.com/benkuper/JUCE.git JUCE
     cd /Users/travis/build/benkuper
     pwd
     ls -d */
+    curl -L -o Packages.dmg 'http://s.sudre.free.fr/Software/files/Packages.dmg'
+    hdiutil mount Packages.dmg
+    sudo installer -pkg /Volumes/Packages\ 1.2.5/Install\ Packages.pkg -target /
+    hdiutil detach /Volumes/Packages\ 1.2.5/
+    cd /Users/travis/build/benkuper
   fi
 install:
 - |
