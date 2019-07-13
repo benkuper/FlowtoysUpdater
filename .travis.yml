@@ -123,7 +123,7 @@ after_success:
     echo "Zipping and Updating..."
     cd /Users/travis/build/benkuper/FlowtoysUpdater/Builds/MacOSX/build/$MAKECONF
     ls
-    echo Updating zip..."
+    echo "Updating zip..."
     zip -r -y FlowtoysUpdater-osx-$SUFFIX.zip FlowtoysUpdater.app
     curl -T FlowtoysUpdater-osx-$SUFFIX.zip -u $FTP_USER:$FTP_PASSWORD --insecure ftp://flow-toys.com/app/
     cd /Users/travis/build/benkuper/FlowtoysUpdater
