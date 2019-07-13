@@ -180,11 +180,20 @@ void PropManager::newMessage(const Prop::PropEvent & e)
 		break;
 
 	case Prop::PropEvent::FLASH_ERROR:
-		flashSuccess.set(props.indexOf(e.prop), false);
+		if (!processedFlashes[props.indexOf(e.prop)])
+		{
+			flashSuccess.set(props.indexOf(e.prop), false);
+			processedFlashes.set(props.indexOf(e.prop), true);
+		}
+		else
+		{
+			jassertfalse;
+		}
 		break;
 
 	case Prop::PropEvent::FLASH_SUCCESS:
 		flashSuccess.set(props.indexOf(e.prop), true);
+		processedFlashes.set(props.indexOf(e.prop), true);
 		break;
 	}
 
@@ -251,10 +260,15 @@ void PropManager::flash()
 	isFlashing = true;
 
 	flashProgresses.clear();
+	processedFlashes.clear();
+	flashSuccess.clear();
 
 	for (auto& d : props)
 	{
 		flashProgresses.add(0);
+		flashSuccess.add(false);
+		processedFlashes.add(false);
+
 		Firmware* f = FirmwareManager::getInstance()->selectedFirmware;
 
 		DBG("Flashing device " << d->infos);

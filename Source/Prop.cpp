@@ -113,8 +113,12 @@ void Prop::sendGetStatus()
 	}
 	else
 	{
-		numNoResponses++;
-		if (numNoResponses >= 3) deviceStatus = Error;
+		if (isFlashing)
+		{
+			numNoResponses++;
+			if (numNoResponses >= 20) deviceStatus = Error;
+		}
+		
 		DBG("NO RESPONSE ! ");
 	}
 }
@@ -250,16 +254,12 @@ void Prop::run()
 {
 	const int bufferSize = 64; //fixed for bootloader
 
+	numNoResponses = 0;
 	isFlashing = true;
 	setProgression(0);
 
-
-	//sendReset();
-	//sleep(100);
-
 	sendGetStatus();
 
-	DBG("Device status : " << deviceStatus);
 	sendGetStatus();
 
 	if (deviceStatus != Idle)
@@ -377,8 +377,8 @@ void Prop::run()
 	isFlashing = false;
 
 	DBG("Flashing done !");
-	sendAppReset(Subject::App);
 	queuedNotifier.addMessage(new PropEvent(this, PropEvent::FLASH_SUCCESS, progression));
+	sendAppReset(Subject::App);
 	
 }
 

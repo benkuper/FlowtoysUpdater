@@ -28,6 +28,7 @@ public:
 
 	Array<float> flashProgresses;
 	Array<bool> flashSuccess;
+	Array<bool> processedFlashes;
 
 	//Settings from user choices
 	//bool shouldCheck;
