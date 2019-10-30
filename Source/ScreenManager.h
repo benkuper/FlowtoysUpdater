@@ -40,6 +40,8 @@ public:
 	void screenFinish(AppScreen * s) override;
 	void gotoScreen(AppScreen::ScreenID id) override;
 
+	bool keyPressed(const KeyPress& e) override;
+
 	// Inherited via Listener
 	virtual void buttonClicked(Button *) override;
 

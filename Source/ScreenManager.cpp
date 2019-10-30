@@ -140,6 +140,17 @@ void ScreenManager::gotoScreen(AppScreen::ScreenID id)
 	}
 }
 
+bool ScreenManager::keyPressed(const KeyPress& e)
+{
+/*
+	if (e.getKeyCode() == e.createFromDescription("n").getKeyCode() && e.getModifiers().isCommandDown())
+	{
+		nextScreen();
+	}
+*/
+	return false;
+}
+
 void ScreenManager::buttonClicked(Button * b)
 {
 	if (b == &prevBT)

@@ -43,8 +43,10 @@ void FirmwareChooserScreen::updateVisibility()
 {
 	bool v = FirmwareManager::getInstance()->firmwaresAreLoaded();
 
+	String noFWText = "No firmware available, are you connected to internet?";
 	fwChooser.clear();
-	fwChooser.setTextWhenNoChoicesAvailable("No firmware available, are you connected to internet?");
+	fwChooser.setTextWhenNoChoicesAvailable(noFWText);
+	
 	fwList = FirmwareManager::getInstance()->getFirmwaresForType(PropManager::getInstance()->selectedType, -1);
 
 	int targetHW = -1;
@@ -59,6 +61,9 @@ void FirmwareChooserScreen::updateVisibility()
 		bool isLocal = FirmwareManager::getInstance()->localFirmware.get() == fwList[i];
 		String label = fwList[i]->infos;
 		if (isLocal) label += " (local)";
+/*
+		else if (targetHW == -1) {} //keep for testing
+*/
 		else if (!fwList[i]->isHardwareCompatible(targetHW))
 		{
 			DBG("Not compatible hardware !");
@@ -69,7 +74,9 @@ void FirmwareChooserScreen::updateVisibility()
 		if (isLocal) indexToSelect = i + 1;
 
 	}
-	fwChooser.setTextWhenNothingSelected(fwList.size() > 0 ? fwList[0]->infos : "No firmware");
+
+	fwChooser.setTextWhenNothingSelected(fwChooser.getNumItems() > 0 ? "select a firmware" : noFWText);
+
 
 	selectBT.setVisible(v);
 	fwChooser.setVisible(v);
@@ -78,6 +85,10 @@ void FirmwareChooserScreen::updateVisibility()
 	{
 		DBG("Index to select : " << indexToSelect);
 		fwChooser.setSelectedId(indexToSelect);
+	}
+	else if (fwChooser.getNumItems() > 0)
+	{
+		fwChooser.setSelectedItemIndex(0);
 	}
 	repaint();
 }
