@@ -13,7 +13,7 @@
 
 FirmwareChooserScreen::FirmwareChooserScreen() :
 	AppScreen("Firmware", FW_CHOOSE),
-	selectBT("Next step"),
+	selectBT("upload"),
 	chooseFileBT("Choose local file")
 {
 	addChildComponent(selectBT);

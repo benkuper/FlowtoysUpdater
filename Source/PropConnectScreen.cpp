@@ -13,7 +13,7 @@
 
 PropConnectScreen::PropConnectScreen() :
 	AppScreen("Connect Props", CONNECT),
-	flashBT("Upload"),
+	flashBT("next step"),
 	helpBT("helpBT"),
 	multipleRevisionsDetected(false)
 {
