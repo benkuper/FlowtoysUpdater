@@ -55,7 +55,10 @@ profile
 doxygen/doc
 extras/Projucer/JUCECompileEngine.dylib
 Binaries/App/Chataigne-x64_Debug.exe
-Binaries/
+Binaries/Debug
+Binaries/**/*.exp
+Binaries/**/*.lib
+Binaries/**/*.exe
 travis_enc.txt
 site/
 
