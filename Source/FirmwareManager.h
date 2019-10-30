@@ -16,8 +16,9 @@
 class Firmware
 {
 public:
-	Firmware(MemoryBlock data, int totalBytesToSend, var meta,  String infos, String versionString, float version, int pid, int vid) :
-		data(data), totalBytesToSend(totalBytesToSend), infos(infos), meta(meta),  versionString(versionString), version(version), pid(pid), vid(vid) {}
+	Firmware(MemoryBlock data, int totalBytesToSend, var meta,  String infos, String versionString, float version, int hwRev, int pid, int vid) :
+		data(data), totalBytesToSend(totalBytesToSend), infos(infos), meta(meta),  versionString(versionString), version(version), hwRev(hwRev), pid(pid), vid(vid)
+	{}
 
 	MemoryBlock data;
 	int totalBytesToSend;
@@ -26,10 +27,38 @@ public:
 	String infos;
 	String versionString;
 	var meta;
+	int hwRev;
 	float version;
 	int pid;
 	int vid;
 	PropType type;
+
+	String getHwRevName()
+	{
+		switch (hwRev)
+		{
+		case 0: return "notset";
+		case 0x300: return "C";
+		case 0x400: return "D";
+		case 0x500: return "E";
+		case 0x600: return "F";
+		case 0x700: return "G";
+		case 0x800: return "H";
+		}
+
+		return "unknown";
+	}
+
+	bool isHardwareCompatible(int hardwareRev)
+	{
+		if (type == CAPSULE)
+		{
+			if (hardwareRev == 0x400 && hwRev == 0x300) return true;
+			if (hardwareRev == 0x300 && hwRev == 0x400) return true;
+		}
+
+		return hardwareRev == hwRev;
+	}
 };
 
 class FirmwareComparator
@@ -78,7 +107,7 @@ public:
 	bool firmwaresAreLoaded();
 
 	OwnedArray<Firmware> firmwares;
-	Array<Firmware *> getFirmwaresForType(PropType type);
+	Array<Firmware*> getFirmwaresForType(PropType type, int hardwareRevision);
 
 	virtual void run() override;
 

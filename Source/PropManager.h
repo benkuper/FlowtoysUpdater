@@ -33,7 +33,8 @@ public:
 	//Settings from user choices
 	//bool shouldCheck;
 	PropType selectedType;
-	
+	int selectedRevision;
+
 	bool isFlashing;
 
 	void setSelectedType(PropType t);

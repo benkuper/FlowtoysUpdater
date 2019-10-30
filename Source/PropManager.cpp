@@ -17,6 +17,7 @@ juce_ImplementSingleton(PropManager)
 PropManager::PropManager() :
 	//shouldCheck(false),
 	selectedType(NOTSET),
+	selectedRevision(-1),
 	isFlashing(false),
     queuedNotifier(100)
 {

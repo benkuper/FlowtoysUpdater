@@ -25,15 +25,19 @@ public:
 
 	TextButton flashBT;
 	Label helpBT;
+	Label resetBTLink;
+
+	bool multipleRevisionsDetected;
 
 	void paint(Graphics &g) override;
 	void resized() override;
 	void reset() override;
 
+	void checkProps();
+
 	void mouseDown(const MouseEvent &e) override;
 
 	void newMessage(const PropManager::PropManagerEvent &e) override;
-
 	
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PropConnectScreen)

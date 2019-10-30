@@ -21,8 +21,8 @@ ScreenManager::ScreenManager() :
 	prevBT("Previous",.5,Colours::lightgrey)
 {
 	screens.add(new PropChooserScreen());
-	screens.add(new FirmwareChooserScreen());
 	screens.add(new PropConnectScreen());
+	screens.add(new FirmwareChooserScreen());
 	screens.add(new UploadScreen());
 	screens.add(new EndScreen());
 

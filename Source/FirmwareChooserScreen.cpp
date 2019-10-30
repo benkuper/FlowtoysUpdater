@@ -45,15 +45,26 @@ void FirmwareChooserScreen::updateVisibility()
 
 	fwChooser.clear();
 	fwChooser.setTextWhenNoChoicesAvailable("No firmware available, are you connected to internet?");
-	fwList = FirmwareManager::getInstance()->getFirmwaresForType(PropManager::getInstance()->selectedType);
+	fwList = FirmwareManager::getInstance()->getFirmwaresForType(PropManager::getInstance()->selectedType, -1);
 
-	//fwChooser.addItem("auto update", -1);
+	int targetHW = -1;
+	if (PropManager::getInstance()->props.size() > 0)
+	{
+		targetHW = PropManager::getInstance()->props[0]->hw_rev;
+	}
+
 	int indexToSelect = -1;
 	for (int i = 0; i < fwList.size(); i++)
 	{
 		bool isLocal = FirmwareManager::getInstance()->localFirmware.get() == fwList[i];
 		String label = fwList[i]->infos;
 		if (isLocal) label += " (local)";
+		else if (!fwList[i]->isHardwareCompatible(targetHW))
+		{
+			DBG("Not compatible hardware !");
+			continue;
+		}
+
 		fwChooser.addItem(label, i + 1);
 		if (isLocal) indexToSelect = i + 1;
 

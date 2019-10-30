@@ -96,23 +96,28 @@ Firmware * FirmwareManager::getFirmwareForFile(File f)
 		return nullptr;
 	}
 
+	DBG("Got firmware : " << JSON::toString(fwMeta));
+
 	int targetVID = (int)fwMeta.getProperty("usb_vid", 0);
 	int targetPID = (int)fwMeta.getProperty("usb_pid", 0);
 	uint16 fwRev = (uint16)(int)fwMeta.getProperty("fw_rev", 0);
+	int hwRev = (int)fwMeta.getProperty("hw_rev", 0);
 	String targetVersion = String(fwRev >> 8) + "." + String::formatted("%02d", fwRev & 0xff);
 	String fwDate = Time((int64)((int64)fwMeta.getDynamicObject()->getProperty("fw_date")) * 1000).toString(true, false);
 	String gitRev = fwMeta.getProperty("git_rev", "[not set]");
 	String fwIdent = fwMeta.getProperty("fw_ident", "[not set]");
 
 	String fwInfos = fwIdent + ", version " + targetVersion + " (" + fwDate + ")";
-	Firmware * fw = new Firmware(fwData, totalBytesToSend, fwMeta, f.getFileNameWithoutExtension() /* + " - "+fwInfos */, targetVersion, targetVersion.getFloatValue(), targetPID, targetVID);
+	Firmware * fw = new Firmware(fwData, totalBytesToSend, fwMeta, f.getFileNameWithoutExtension(), targetVersion, targetVersion.getFloatValue(), hwRev, targetPID, targetVID);
 	
-	//DBG(fwIdentStrings->indexOf(fwIdent) << " <> " << (int)(fwIdent == "capsule"));
-	
+	DBG("Firmware : " << String::toHexString(fw->hwRev) << " : " << fw->getHwRevName());
+
 	for (int i = 0; i < TYPE_MAX; i++)
 	{
 		if (productIds[i] == targetPID) fw->type = (PropType)i;
 	}
+
+
 
 	return fw;
 }
@@ -140,7 +145,7 @@ bool FirmwareManager::firmwaresAreLoaded()
 	return firmwares.size() > 0;
 }
 
-Array<Firmware *> FirmwareManager::getFirmwaresForType(PropType type)
+Array<Firmware *> FirmwareManager::getFirmwaresForType(PropType type, int hardwareRevision)
 {
 	Array<Firmware *> result;
 	if (type == NOTSET) return result;
@@ -148,7 +153,7 @@ Array<Firmware *> FirmwareManager::getFirmwaresForType(PropType type)
 	int targetPID = productIds[type];
 	for (auto &f : firmwares)
 	{
-		if (f->pid == targetPID) result.add(f);
+		if (f->pid == targetPID && (hardwareRevision == -1 || hardwareRevision == f->version)) result.add(f);
 	}
 
 	if (localFirmware != nullptr && localFirmware->type == type) result.add(localFirmware.get());
