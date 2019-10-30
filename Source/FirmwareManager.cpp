@@ -102,7 +102,7 @@ Firmware * FirmwareManager::getFirmwareForFile(File f)
 	int targetPID = (int)fwMeta.getProperty("usb_pid", 0);
 	uint16 fwRev = (uint16)(int)fwMeta.getProperty("fw_rev", 0);
 	int hwRev = (int)fwMeta.getProperty("hw_rev", 0);
-	String targetVersion = String(fwRev >> 8) + "." + String::formatted("%02d", fwRev & 0xff);
+	String targetVersion = String(fwRev >> 8) + "." + String(fwRev & 0xff);
 	String fwDate = Time((int64)((int64)fwMeta.getDynamicObject()->getProperty("fw_date")) * 1000).toString(true, false);
 	String gitRev = fwMeta.getProperty("git_rev", "[not set]");
 	String fwIdent = fwMeta.getProperty("fw_ident", "[not set]");

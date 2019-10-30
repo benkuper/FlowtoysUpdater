@@ -169,7 +169,7 @@ void Prop::sendGetVersion(Subject subject)
 		{
 			fw_date = Time((int64)(_fw_date * 1000)).toString(true, false);
 			fw_rev = _fw_rev;
-			fwVersion = String(fw_rev >> 8) + "." + String::formatted("%02d", fw_rev & 0xff);
+			fwVersion = String(fw_rev >> 8) + "." + String(fw_rev & 0xff);
 		}
 
 		DBG("Date bootloader " << (int64)(_fw_date * 1000) << " : " << fw_date);
