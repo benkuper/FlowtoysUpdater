@@ -31,7 +31,7 @@ SetupWindowTitle={#ApplicationName} {#ApplicationVersion} Setup
 [Files]
 Source: "Binaries/CI/App/{#ApplicationName}.exe"; DestDir: "{app}"
 Source: "Binaries/CI/App/*.dll"; DestDir: "{app}"
-Source: "redist\vcredist_x64.exe"; DestDir: "{tmp}";
+Source: "redist\vc_redist.x64.exe"; DestDir: "{tmp}";
 
 [Icons]
 Name: "{group}\{#ApplicationName}"; Filename: "{app}\{#ApplicationName}.exe"
