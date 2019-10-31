@@ -33,7 +33,7 @@ public:
 	int vid;
 	PropType type;
 
-	String getHwRevName()
+	static String getHwRevNameforHwRev(int hwRev)
 	{
 		switch (hwRev)
 		{

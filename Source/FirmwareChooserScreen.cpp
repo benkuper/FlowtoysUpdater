@@ -184,6 +184,33 @@ void FirmwareChooserScreen::buttonClicked(Button* b)
 			{
 				AlertWindow::showMessageBox(AlertWindow::WarningIcon, "Bad file", "The file you chose is either corrupted or not a firmware for " + displayNames[PropManager::getInstance()->selectedType] + ".", "OK");
 			}
+			else
+			{
+				if (FirmwareManager::getInstance()->localFirmware != nullptr)
+				{
+					int targetHW = -1;
+					if (PropManager::getInstance()->props.size() > 0) targetHW = PropManager::getInstance()->props[0]->hw_rev;
+
+					Firmware* fw = FirmwareManager::getInstance()->localFirmware.get();
+					bool compatibleHW = fw->isHardwareCompatible(targetHW);
+
+					if (!compatibleHW)
+					{
+						bool hwResult = AlertWindow::showOkCancelBox(AlertWindow::WarningIcon, "Incompatible Hardware revision", "The selected firmware is made for a different revision that the connected props \
+(props are rev " + Firmware::getHwRevNameforHwRev(targetHW) + ", firmware is rev " + Firmware::getHwRevNameforHwRev(fw->hwRev)
++"\nAre you SURE you want to use this firmware ?", "Yes", "No");
+
+						if (!hwResult)
+						{
+							FirmwareManager::getInstance()->localFirmware.reset(nullptr);
+						}
+
+					}
+				}
+			}
+
+			
+
 			updateVisibility();
 		}
 	}

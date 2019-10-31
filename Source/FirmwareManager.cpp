@@ -110,7 +110,7 @@ Firmware * FirmwareManager::getFirmwareForFile(File f)
 	String fwInfos = fwIdent + ", version " + targetVersion + " (" + fwDate + ")";
 	Firmware * fw = new Firmware(fwData, totalBytesToSend, fwMeta, f.getFileNameWithoutExtension(), targetVersion, targetVersion.getFloatValue(), hwRev, targetPID, targetVID);
 	
-	DBG("Firmware : " << String::toHexString(fw->hwRev) << " : " << fw->getHwRevName());
+	DBG("Firmware : " << String::toHexString(fw->hwRev) << " : " << Firmware::getHwRevNameforHwRev(fw->hwRev));
 
 	for (int i = 0; i < TYPE_MAX; i++)
 	{
