@@ -50,7 +50,9 @@ void FirmwareManager::loadFirmwares()
 
 	DBG("Loading firmwares");
 	Array<File> files = firmwareFolder.findChildFiles(File::TypesOfFileToFind::findFiles, false, "*.fwimg");
-	DBG("Found " << files.size() << " local files");
+    
+    files.sort();
+    
 	for (auto &f : files)
 	{
 		Firmware * fw = getFirmwareForFile(f);
