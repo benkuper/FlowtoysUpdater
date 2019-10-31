@@ -61,9 +61,9 @@ void FirmwareChooserScreen::updateVisibility()
 		bool isLocal = FirmwareManager::getInstance()->localFirmware.get() == fwList[i];
 		String label = fwList[i]->infos;
 		if (isLocal) label += " (local)";
-/*
+#if JUCE_DEBUG && JUCE_WINDOWS
 		else if (targetHW == -1) {} //keep for testing
-*/
+#endif
 		else if (!fwList[i]->isHardwareCompatible(targetHW))
 		{
 			DBG("Not compatible hardware !");
@@ -110,11 +110,11 @@ void FirmwareChooserScreen::paint(Graphics& g)
 		//s = "leave as \"auto update\" for the latest version\nor select your preferred firmware.";
 
 		s += "SELECT YOUR FIRMWARE \
-			\nto ensure the latest version, restart the updater, then choose the version marked \"CURRENT\"";
+\nrestart the updater to ensure latest versions have loaded";
 
 		if (PropManager::getInstance()->selectedType == PropType::CLUB)
 		{
-			s += "\nfor clubs, select your club type* for all other props, select spinXY(XY=pixel count) \
+			s += "\nselect your club type, or for all other props select “spin(pixel count) \
 \n\n\nTO FIND THE CORRECT PIXEL COUNT FOR YOUR PROP \
 \nturn on your prop + count the number of pixels down the length \
 \nfor staves it is 1/2 the total pixels \

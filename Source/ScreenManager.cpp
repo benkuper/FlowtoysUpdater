@@ -142,12 +142,13 @@ void ScreenManager::gotoScreen(AppScreen::ScreenID id)
 
 bool ScreenManager::keyPressed(const KeyPress& e)
 {
-/*
+#if JUCE_WINDOWS && JUCE_DEBUG
 	if (e.getKeyCode() == e.createFromDescription("n").getKeyCode() && e.getModifiers().isCommandDown())
 	{
 		nextScreen();
 	}
-*/
+#endif
+
 	return false;
 }
 

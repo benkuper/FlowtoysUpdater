@@ -56,14 +56,19 @@ void PropConnectScreen::paint(Graphics & g)
 	{
 		if (PropManager::getInstance()->selectedType == PropType::CAPSULE)
 		{
-			s = "- capsules must be unplugged and off / dark for more than 60 seconds\nto connect to the updater without a manual reset. \
-\n- when connected you should see it in the updater and it should light up blue. \
-\n- older capsules may not turn blue when connected, but should show up in the updater. \
-\n- If your capsule does NOT connect to the updater, try a RESET while plugged in.Click on the button below for reset instructions. \
+			s = "- capsule lights do not reliably auto-connect to the updater, you may need to do a reset, \
+\nor you can \"save\" P5M10 to connect. (navigate to P5M10 (bright red) and hold for about 7 sec. \
+\nuntil the light is back on, then let go, it should connect) \
+\n\n- when connected you should see it in the updater and it should light up blue. \
+\n\n- older capsules may not turn blue when connected, but should show up in the updater. \
+\n\n- If your capsule does NOT connect to the updater, try a RESET while plugged in.Click on the button below for reset instructions. \
 \n \
 \nupdating multiple capsules? \
 \nyou can use a USB hub to update them all at once! \
-\nconnect them all via USB, then click the upload button below";
+\nconnect them all via USB, then click the next step button below. \
+\nNOTE: saved settings and favorites are retained after update, \
+\ngrouping might be lost depending on version, \
+\nand favorites might look different due to difference in mode/adjust.";
 
 			resetBTLink.setVisible(true);
 
@@ -72,7 +77,7 @@ void PropConnectScreen::paint(Graphics & g)
 		{
 			s = "updating multiple vision props? \
 \nif they are the same props/use the same firmware, you can use a USB hub to update them all at once. \
-\nconnect them all via USB, then click the upload button below";
+\nconnect them all via USB, then click the next step button below";
 
 			resetBTLink.setVisible(false);
 		}

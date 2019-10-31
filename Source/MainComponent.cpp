@@ -12,7 +12,7 @@
 MainComponent::MainComponent()
 {
 	addAndMakeVisible(sm);
-    setSize (700, 450);
+    setSize (800, 600);
 	
 }
 
