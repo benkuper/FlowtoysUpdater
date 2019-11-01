@@ -114,7 +114,7 @@ void FirmwareChooserScreen::paint(Graphics& g)
 
 		if (PropManager::getInstance()->selectedType == PropType::CLUB)
 		{
-			s += "\nselect your club type, or for all other props select “spin(pixel count) \
+			s += "\nselect your club type, or for all other props select \"spin(pixel count)\" or next higher pixel count available \
 \n\n\nTO FIND THE CORRECT PIXEL COUNT FOR YOUR PROP \
 \nturn on your prop + count the number of pixels down the length \
 \nfor staves it is 1/2 the total pixels \
@@ -123,7 +123,7 @@ void FirmwareChooserScreen::paint(Graphics& g)
 		}
 	}
 
-	g.drawFittedText(s, getLocalBounds().removeFromTop(200).reduced(40, 10), Justification::centred, 5, false);
+	g.drawFittedText(s, getLocalBounds().removeFromTop(200).reduced(40, 10), Justification::centred, 20, false);
 
 }
 
