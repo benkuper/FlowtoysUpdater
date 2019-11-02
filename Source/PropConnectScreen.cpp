@@ -30,7 +30,7 @@ PropConnectScreen::PropConnectScreen() :
 	helpBT.addMouseListener(this, false);
 
 	
-	resetBTLink.setColour(resetBTLink.textColourId, Colours::purple.brighter());
+	resetBTLink.setColour(resetBTLink.textColourId, Colours::purple.brighter(.7f));
 	resetBTLink.setText("click here for reset instructions.", dontSendNotification);
 	resetBTLink.setJustificationType(Justification::centred);
 	addAndMakeVisible(&resetBTLink);
@@ -48,7 +48,7 @@ void PropConnectScreen::paint(Graphics & g)
 {
 	Rectangle<int> r = getLocalBounds();
 	Rectangle<int> tr = r.removeFromTop(40);
-	Rectangle<int> fr = r.removeFromBottom(100);
+	Rectangle<int> fr = r.removeFromBottom(200);
 
 	int numProps = PropManager::getInstance()->props.size();
 	String s = "";
@@ -56,14 +56,14 @@ void PropConnectScreen::paint(Graphics & g)
 	{
 		if (PropManager::getInstance()->selectedType == PropType::CAPSULE)
 		{
-			s = "- capsule lights do not reliably auto-connect to the updater, you may need to do a reset, \
-\nor you can \"save\" P5M10 to connect. (navigate to P5M10 (bright red) and hold for about 7 sec. \
-\nuntil the light is back on, then let go, it should connect) \
+			s = "Connect your capsule(s) now \
 \n\n- when connected you should see it in the updater and it should light up blue. \
 \n\n- older capsules may not turn blue when connected, but should show up in the updater. \
 \n\n- If your capsule does NOT connect to the updater, try a RESET while plugged in.Click on the button below for reset instructions. \
-\n \
-\nupdating multiple capsules? \
+\n\n- capsule lights do not reliably auto-connect to the updater, you may need to do a reset, \
+\nor you can \"save\" P5M10 to connect. (navigate to P5M10 (bright red) and hold for about 7 sec. \
+\nuntil the light is back on, then let go, it should connect) \
+\n\nupdating multiple capsules? \
 \nyou can use a USB hub to update them all at once! \
 \nconnect them all via USB, then click the next step button below. \
 \nNOTE: saved settings and favorites are retained after update, \
@@ -75,7 +75,8 @@ void PropConnectScreen::paint(Graphics & g)
 		}
 		else
 		{
-			s = "updating multiple vision props? \
+			s = "Connect your vision prop(s) now \
+\n\nupdating multiple vision props? \
 \nif they are the same props/use the same firmware, you can use a USB hub to update them all at once. \
 \nconnect them all via USB, then click the next step button below";
 
@@ -117,7 +118,7 @@ void PropConnectScreen::paint(Graphics & g)
 void PropConnectScreen::resized()
 {
 	Rectangle<int> r = getLocalBounds();
-	Rectangle<int> fr = r.removeFromBottom(100);
+	Rectangle<int> fr = r.removeFromBottom(200);
 
 	helpBT.setBounds(fr.removeFromTop(30));
 	if (resetBTLink.isVisible())
@@ -164,8 +165,10 @@ void PropConnectScreen::mouseDown(const MouseEvent & e)
 
 	if (e.eventComponent == &helpBT)
 	{
-		URL url("https://flowtoys2.freshdesk.com/support/solutions/articles/6000213534-how-to-update-your-capsule-2-0-firmware");
-		url.launchInDefaultBrowser();
+		String link = "";
+		if (PropManager::getInstance()->selectedType == PropType::CLUB) link = "https://flowtoys2.freshdesk.com/support/solutions/articles/6000213554-how-to-update-your-vision-prop-firmware";
+		else link = "https://flowtoys2.freshdesk.com/support/solutions/articles/6000213534-how-to-update-your-capsule-2-0-firmware";
+		URL(link).launchInDefaultBrowser(); 
 	}
 	else if (e.eventComponent == &resetBTLink)
 	{

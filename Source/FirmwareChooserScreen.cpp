@@ -110,7 +110,7 @@ void FirmwareChooserScreen::paint(Graphics& g)
 		//s = "leave as \"auto update\" for the latest version\nor select your preferred firmware.";
 
 		s += "SELECT YOUR FIRMWARE \
-\nrestart the updater to ensure latest versions have loaded";
+\n\nIf your updater has been open for awhile, restart to ensure the latest firmware versions have loaded";
 
 		if (PropManager::getInstance()->selectedType == PropType::CLUB)
 		{
@@ -123,7 +123,7 @@ void FirmwareChooserScreen::paint(Graphics& g)
 		}
 	}
 
-	g.drawFittedText(s, getLocalBounds().removeFromTop(200).reduced(40, 10), Justification::centred, 20, false);
+	g.drawFittedText(s, getLocalBounds().removeFromTop(150).reduced(40, 10), Justification::centred, 20, false);
 
 }
 
@@ -140,15 +140,17 @@ void FirmwareChooserScreen::mouseDown(const MouseEvent& e)
 
 	if (e.eventComponent == &helpBT)
 	{
-		URL url("https://flowtoys2.freshdesk.com/support/solutions/articles/6000213534-how-to-update-your-capsule-2-0-firmware");
-		url.launchInDefaultBrowser();
+		String link = "";
+		if (PropManager::getInstance()->selectedType == PropType::CLUB) link = "https://flowtoys2.freshdesk.com/support/solutions/articles/6000213554-how-to-update-your-vision-prop-firmware";
+		else link = "https://flowtoys2.freshdesk.com/support/solutions/articles/6000213534-how-to-update-your-capsule-2-0-firmware";
+		URL(link).launchInDefaultBrowser();
 	}
 }
 
 void FirmwareChooserScreen::resized()
 {
 	Rectangle<int> r = getLocalBounds();
-	Rectangle<int> br = r.removeFromBottom(60);
+	Rectangle<int> br = r.removeFromBottom(200);
 	selectBT.setBounds(br.withSizeKeepingCentre(100, 40).translated(0, -50));
 	chooseFileBT.setBounds(br.withSizeKeepingCentre(120, 40));
 	helpBT.setBounds(r.withSizeKeepingCentre(450, 30).translated(0,40));
