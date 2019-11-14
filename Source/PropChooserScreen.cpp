@@ -47,7 +47,7 @@ PropChooserScreen::~PropChooserScreen()
 void PropChooserScreen::paint(Graphics & g)
 {
 	g.setColour(Colours::lightgrey);
-	g.drawFittedText("select the type of prop.", getLocalBounds().removeFromTop(100).reduced(20), Justification::centred, 3);
+	g.drawFittedText("before connecting your props, select the prop type below.", getLocalBounds().removeFromTop(100).reduced(20), Justification::centred, 3);
 
 	for (auto & b : buttons)
 	{

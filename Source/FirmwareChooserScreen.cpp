@@ -55,6 +55,7 @@ void FirmwareChooserScreen::updateVisibility()
 		targetHW = PropManager::getInstance()->props[0]->hw_rev;
 	}
 
+	
 	int indexToSelect = -1;
 	for (int i = 0; i < fwList.size(); i++)
 	{
@@ -72,7 +73,7 @@ void FirmwareChooserScreen::updateVisibility()
 
 		fwChooser.addItem(label, i + 1);
 		if (isLocal) indexToSelect = i + 1;
-
+		if (FirmwareManager::getInstance()->selectedFirmware != nullptr && fwList[i] == FirmwareManager::getInstance()->selectedFirmware) indexToSelect = i + 1;
 	}
 
 	fwChooser.setTextWhenNothingSelected(fwChooser.getNumItems() > 0 ? "select a firmware" : noFWText);

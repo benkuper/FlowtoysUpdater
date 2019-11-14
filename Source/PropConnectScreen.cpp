@@ -47,55 +47,63 @@ PropConnectScreen::~PropConnectScreen()
 void PropConnectScreen::paint(Graphics & g)
 {
 	Rectangle<int> r = getLocalBounds();
-	Rectangle<int> tr = r.removeFromTop(40);
+	Rectangle<int> tr = r.removeFromTop(10);
 	Rectangle<int> fr = r.removeFromBottom(200);
 
 	int numProps = PropManager::getInstance()->props.size();
 	String s = "";
-	if (numProps == 0)
+	
+	if (PropManager::getInstance()->selectedType == PropType::CAPSULE)
 	{
-		if (PropManager::getInstance()->selectedType == PropType::CAPSULE)
-		{
-			s = "Connect your capsule(s) now \
+		s = "Connect your capsule(s) now \
 \n\n- when connected you should see it in the updater and it should light up blue. \
 \n\n- older capsules may not turn blue when connected, but should show up in the updater. \
-\n\n- If your capsule does NOT connect to the updater, try a RESET while plugged in.Click on the button below for reset instructions. \
+\n\n- If your capsule does NOT connect to the updater, try a RESET while plugged in and turned on.Click on the button below for reset instructions. \
 \n\n- capsule lights do not reliably auto-connect to the updater, you may need to do a reset, \
 \nor you can \"save\" P5M10 to connect. (navigate to P5M10 (bright red) and hold for about 7 sec. \
-\nuntil the light is back on, then let go, it should connect) \
-\n\nupdating multiple capsules? \
-\nyou can use a USB hub to update them all at once! \
-\nconnect them all via USB, then click the next step button below. \
-\nNOTE: saved settings and favorites are retained after update, \
-\ngrouping might be lost depending on version, \
-\nand favorites might look different due to difference in mode/adjust.";
+\nuntil the light is back on, then let go, it should connect)";
 
-			resetBTLink.setVisible(true);
-
-		}
-		else
+		if (numProps == 0)
 		{
-			s = "Connect your vision prop(s) now \
-\n\nupdating multiple vision props? \
-\nif they are the same props/use the same firmware, you can use a USB hub to update them all at once. \
-\nconnect them all via USB, then click the next step button below";
-
-			resetBTLink.setVisible(false);
+			s += "\n\nupdating multiple capsules ? \
+\nyou can use a USB hub to update them all at once!\
+\nconnect them all via USB, then click the next step button below. \
+\nNOTE: saved settingsand favorites are retained after update, \
+\ngrouping might be lost depending on version, \
+\nand favorites might look different due to difference in mode / adjust.";
 		}
+
+		resetBTLink.setVisible(true);
+
 	}
 	else
 	{
+		s = "Connect your vision prop(s) now";
+
+		if (numProps == 0)
+		{
+			s += "\n\nupdating multiple vision props? \
+\nif they are the same props/use the same firmware, you can use a USB hub to update them all at once. \
+\nconnect them all via USB, then click the next step button below";
+		}
+
+		resetBTLink.setVisible(false);
+	}
+	
+
+	if (numProps > 0)
+	{
 		if (multipleRevisionsDetected)
 		{
-			s = "different hardware revisions have been detected in the connected props.\nplease only connect props of the same revision.\n\n";
+			s += "different hardware revisions have been detected in the connected props.\nplease only connect props of the same revision.\n\n";
 		}
 		else
 		{
-			s = String(numProps) + " " + displayNames[(int)(PropManager::getInstance()->selectedType)].toLowerCase() + " connected:\n";
+			s += "\n\n" + String(numProps) + " " + displayNames[(int)(PropManager::getInstance()->selectedType)].toLowerCase() + " connected:\n";
 		}
-		
 	}
-
+	
+		
 	int index = 0;
 	for (auto &p : PropManager::getInstance()->props)
 	{
@@ -111,19 +119,19 @@ void PropConnectScreen::paint(Graphics & g)
 	g.drawFittedText("firmware to be uploaded:\n" + FirmwareManager::getInstance()->selectedFirmware->infos, tr, Justification::centred, 2);
 	*/
 	
-	g.drawFittedText(s, r, Justification::centred, numProps+1);
+	g.drawFittedText(s, r, Justification::centredTop, numProps+1);
 	
 }
 
 void PropConnectScreen::resized()
 {
 	Rectangle<int> r = getLocalBounds();
-	Rectangle<int> fr = r.removeFromBottom(200);
+	Rectangle<int> fr = r.removeFromBottom(100);
 
-	helpBT.setBounds(fr.removeFromTop(30));
+	helpBT.setBounds(fr.removeFromTop(20));
 	if (resetBTLink.isVisible())
 	{
-		resetBTLink.setBounds(fr.removeFromTop(30));
+		resetBTLink.setBounds(fr.removeFromTop(20));
 	}
 	flashBT.setBounds(fr.withSizeKeepingCentre(100, 40));
 	
