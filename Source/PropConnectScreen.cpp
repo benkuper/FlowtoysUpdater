@@ -93,13 +93,14 @@ void PropConnectScreen::paint(Graphics & g)
 
 	if (numProps > 0)
 	{
+		s += "\n\n-------   CONNECTED PROPS   ----------\n\n";
 		if (multipleRevisionsDetected)
 		{
 			s += "different hardware revisions have been detected in the connected props.\nplease only connect props of the same revision.\n\n";
 		}
 		else
 		{
-			s += "\n\n" + String(numProps) + " " + displayNames[(int)(PropManager::getInstance()->selectedType)].toLowerCase() + " connected:\n";
+			s += String(numProps) + " " + displayNames[(int)(PropManager::getInstance()->selectedType)].toLowerCase() + " connected:\n";
 		}
 	}
 	
