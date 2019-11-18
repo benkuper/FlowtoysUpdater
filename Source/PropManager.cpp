@@ -21,7 +21,7 @@ PropManager::PropManager() :
 	isFlashing(false),
     queuedNotifier(100)
 {
-	startTimerHz(2);
+	startTimerHz(10);
 }
 
 PropManager::~PropManager()
