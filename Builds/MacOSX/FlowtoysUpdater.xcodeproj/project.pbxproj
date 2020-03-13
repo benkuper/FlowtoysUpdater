@@ -220,13 +220,6 @@
 			path = ../../Source/PropConstants.h;
 			sourceTree = "SOURCE_ROOT";
 		};
-		34E180BA04958FEBAD63E956 = {
-			isa = PBXFileReference;
-			lastKnownFileType = text.plist.xml;
-			name = FlowtoysUpdater.entitlements;
-			path = FlowtoysUpdater.entitlements;
-			sourceTree = "SOURCE_ROOT";
-		};
 		38A659DD24CD28099FBC43ED = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -843,6 +836,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "FlowtoysUpdater";
+				SDKROOT = macosx;
 				WARNING_CFLAGS = "-Wreorder";
 				ZERO_LINK = NO;
 			};
@@ -888,6 +882,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PRODUCT_NAME = "FlowtoysUpdater";
+				SDKROOT = macosx;
 				WARNING_CFLAGS = "-Wreorder";
 				ZERO_LINK = NO;
 			};

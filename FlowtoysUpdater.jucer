@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="hVyD2E" name="FlowtoysUpdater" projectType="guiapp" jucerVersion="5.4.5"
+<JUCERPROJECT id="hVyD2E" name="FlowtoysUpdater" projectType="guiapp" jucerVersion="5.4.7"
               bundleIdentifier="com.benkuper.flowtoysupdater" version="1.1.4">
   <MAINGROUP id="dV0bQz" name="FlowtoysUpdater">
     <GROUP id="{3E48F26E-9168-5801-2C1A-DC5932568907}" name="Source">
@@ -104,7 +104,7 @@
         <CONFIGURATION isDebug="1" name="Debug" headerPath="../../External/hidapi/include&#10;../../External/libusb/include/libusb-1.0"
                        libraryPath="/usr/lib/x86_64-linux-gnu/" linuxArchitecture="-m64"/>
         <CONFIGURATION isDebug="0" name="Release" headerPath="../../External/hidapi/include&#10;../../External/libusb/include/libusb-1.0"
-                       linuxArchitecture="-m64"/>
+                       linuxArchitecture="-m64" libraryPath="/usr/lib/x86_64-linux-gnu/"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_core" path="../JUCE/modules"/>

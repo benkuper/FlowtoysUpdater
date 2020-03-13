@@ -174,15 +174,17 @@ void PropConnectScreen::mouseDown(const MouseEvent & e)
 
 	if (e.eventComponent == &helpBT)
 	{
-		String link = "";
+		String link = "https://flowtoys2.freshdesk.com/support/solutions/articles/6000216768-flowos-firmware-updater-troubleshooting";
 		if (PropManager::getInstance()->selectedType == PropType::CLUB) link = "https://flowtoys2.freshdesk.com/support/solutions/articles/6000213554-how-to-update-your-vision-prop-firmware";
 		else link = "https://flowtoys2.freshdesk.com/support/solutions/articles/6000213534-how-to-update-your-capsule-2-0-firmware";
 		URL(link).launchInDefaultBrowser(); 
 	}
 	else if (e.eventComponent == &resetBTLink)
 	{
-		URL url("https://flowtoys2.freshdesk.com/support/solutions/articles/6000187786-issue-crash-no-response-funky-radio-or-won-t-connect-to-updater");
-		url.launchInDefaultBrowser();
+		String link = "";
+		if (PropManager::getInstance()->selectedType == PropType::CLUB) link = "https://flowtoys2.freshdesk.com/support/solutions/articles/6000202797-vision-clubs-i-m-having-trouble-grouping";
+		else link = "https://flowtoys2.freshdesk.com/support/solutions/articles/6000232163-how-to-reset-a-capsule-2-0-light";
+		URL(link).launchInDefaultBrowser();
 	}
 }
 
