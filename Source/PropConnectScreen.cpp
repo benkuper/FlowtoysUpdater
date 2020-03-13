@@ -73,7 +73,6 @@ void PropConnectScreen::paint(Graphics & g)
 \nand favorites might look different due to difference in mode / adjust.";
 		}
 
-		resetBTLink.setVisible(true);
 
 	}
 	else
@@ -87,7 +86,6 @@ void PropConnectScreen::paint(Graphics & g)
 \nconnect them all via USB, then click the next step button below";
 		}
 
-		resetBTLink.setVisible(false);
 	}
 	
 
