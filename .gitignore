@@ -74,3 +74,5 @@ FlowtoysUpdater-win-x64\.exe
 Builds/LinuxMakefile/appimagetool-x86_64\.AppImage
 
 Builds/LinuxMakefile/FlowtoysUpdater\.AppDir/usr/bin/FlowtoysUpdater
+
+*.fwimg
