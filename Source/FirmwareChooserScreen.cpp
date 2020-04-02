@@ -91,16 +91,23 @@ void FirmwareChooserScreen::updateVisibility()
 	{
 		fwChooser.setSelectedItemIndex(0);
 	}
+
 	repaint();
 }
 
 void FirmwareChooserScreen::paint(Graphics& g)
 {
 	bool loaded = FirmwareManager::getInstance()->firmwaresAreLoaded();
+	float progress = FirmwareManager::getInstance()->getFirmwaresProgress();
 	bool errored = FirmwareManager::getInstance()->errored;
-
+	bool noOnlineFW = FirmwareManager::getInstance()->onlineFirmwares == 0;
 	String s = "";
-	if (!loaded && !errored) s = "No firmwares available online or locally right now.";
+	if (!loaded && !errored)
+	{
+		if (noOnlineFW) s = "No firmwares available online or locally right now.";
+		else  s = "Loading firmwares, please wait.... " + String((int)(progress * 100)) + "%";
+	}
+
 	else if (!loaded && errored) s = "There were errors while downloading online firmwares and no local firmwares availables.";
 	else if (loaded && errored) s = "There were errors while downloading oneline firmwares, showing only local firmwares.";
 

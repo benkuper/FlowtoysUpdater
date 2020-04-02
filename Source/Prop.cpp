@@ -72,12 +72,12 @@ void Prop::sendAppReset(Subject subject)
 	sendPacket(s);
 }
 
-void Prop::sendUpdate(int totalBytesToSend)
+void Prop::sendUpdate(int _totalBytesToSend)
 {
 	//DBG("Send update, vid " << String::toHexString(vid) << ", pid " << String::toHexString(pid));
 	MemoryOutputStream s;
 	s.writeInt(Command::Update);
-	s.writeInt(totalBytesToSend);
+	s.writeInt(_totalBytesToSend);
 	s.writeInt(0); //CRC = 0
 	s.writeShort(vid);
 	s.writeShort(pid);
@@ -239,13 +239,13 @@ MemoryInputStream * Prop::readResponse()
 	}
 }
 
-void Prop::flash(MemoryBlock * dataBlock, int totalBytesToSend)
+void Prop::flash(MemoryBlock * _dataBlock, int _totalBytesToSend)
 {
 	signalThreadShouldExit();
 	waitForThreadToExit(100);
 
-	this->dataBlock= dataBlock;
-	this->totalBytesToSend = totalBytesToSend;
+	this->dataBlock= _dataBlock;
+	this->totalBytesToSend = _totalBytesToSend;
 
 	startThread();
 }

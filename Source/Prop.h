@@ -100,7 +100,7 @@ public:
 	//Flashing routine
 	void sendReset();
 	void sendAppReset(Subject subject);
-	void sendUpdate(int totalBytesToSend);
+	void sendUpdate(int _totalBytesToSend);
 	void sendData(const char * data, int length);
 	void sendGetStatus();
 	void sendGetVersion(Subject subject);

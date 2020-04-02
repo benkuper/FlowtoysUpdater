@@ -142,6 +142,14 @@ bool FirmwareManager::setLocalFirmware(File f, PropType expectedType)
 	return fw != nullptr;
 }
 
+float FirmwareManager::getFirmwaresProgress()
+{
+	float p = 0;
+	for (auto& fp : firmwareProgress) p += fp;
+	p /= firmwareProgress.size();
+	return p;
+}
+
 bool FirmwareManager::firmwaresAreLoaded()
 {
 	return firmwares.size() > 0;
@@ -202,12 +210,15 @@ void FirmwareManager::run()
 				onlineFirmwares = fileData.size();
 				DBG("Got " << onlineFirmwares << " online firmwares");
 				downloadedFirmwares = 0;
+				firmwareProgress.clear();
+				firmwareProgress.resize(onlineFirmwares);
 				for (int i = 0; i < onlineFirmwares; i++)
 				{
 					File f = firmwareFolder.getChildFile(fileData[i].toString());
-					if (f.exists())
+					if (f.existsAsFile() && f.getSize() > 0)
 					{
 						DBG("File already downloaded");
+						firmwareProgress.set(downloadedFirmwares, 1);
 						downloadedFirmwares++;
 						if (downloadedFirmwares == onlineFirmwares) loadFirmwares();
 					} else
@@ -216,14 +227,16 @@ void FirmwareManager::run()
                         
                         DBG("Downloading " << fURL);
 						URL downloadURL(fURL);
-                        URL::DownloadTask * t = downloadURL.downloadToFile(f, "", this);
+                        std::unique_ptr<URL::DownloadTask> t = downloadURL.downloadToFile(f, "", this);
                         if(t == nullptr)
                         {
                             DBG("Download errored");
+							firmwareProgress.set(downloadedFirmwares, 1);
 							downloadedFirmwares++;
                         }else
                         {
-                            tasks.add(t);
+							firmwareProgress.set(downloadedFirmwares, 0);
+							tasks.add(t.release());
                         }
 					}
 				}
@@ -244,12 +257,16 @@ void FirmwareManager::run()
 
 }
 
-void FirmwareManager::progress (URL::DownloadTask*, int64, int64)
+void FirmwareManager::progress (URL::DownloadTask* t , int64 downloaded, int64 total)
 {
-    //DBG("Progress !");
+    DBG("Progress !");
+	float p = downloaded / total;
+	int index = tasks.indexOf(t);
+	firmwareProgress.set(index, p);
+	queuedNotifier.addMessage(new FirmwareManagerEvent(FirmwareManagerEvent::FIRMWARE_LOAD_PROGRESS));
 }
 
-void FirmwareManager::finished(URL::DownloadTask *, bool success)
+void FirmwareManager::finished(URL::DownloadTask * t, bool success)
 {
 	downloadedFirmwares++;
 
@@ -260,6 +277,12 @@ void FirmwareManager::finished(URL::DownloadTask *, bool success)
 		{
 			DBG("ALL firmware downloaded !");
 			loadFirmwares();
+		}
+		else
+		{
+			int index = tasks.indexOf(t);
+			firmwareProgress.set(index, 1);
+			queuedNotifier.addMessage(new FirmwareManagerEvent(FirmwareManagerEvent::FIRMWARE_LOAD_PROGRESS));
 		}
 	}else
     {

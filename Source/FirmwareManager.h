@@ -100,10 +100,12 @@ public:
 	Firmware * getFirmwareForFile(File f);
 	bool setLocalFirmware(File f, PropType expectedType);
 
+	Array<float> firmwareProgress;
 	int downloadedFirmwares;
 	int onlineFirmwares;
 	bool errored;
 
+	float getFirmwaresProgress();
 	bool firmwaresAreLoaded();
 
 	OwnedArray<Firmware> firmwares;
@@ -121,7 +123,7 @@ public:
 	class FirmwareManagerEvent
 	{
 	public:
-		enum Type { FIRMWARE_LOADED, FIRMWARE_LOAD_ERROR };
+		enum Type { FIRMWARE_LOAD_PROGRESS, FIRMWARE_LOADED, FIRMWARE_LOAD_ERROR };
 		FirmwareManagerEvent(Type type) : type(type) {}
 
 		Type type;
