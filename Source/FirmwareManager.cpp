@@ -81,10 +81,17 @@ Firmware * FirmwareManager::getFirmwareForFile(File f)
 
 	//data
 	std::unique_ptr<InputStream> dataStream(zip.createStreamForEntry(*data));
+	if (dataStream == nullptr)
+	{
+		DBG("INVALID FILE, DELETING");
+		f.deleteFile(); 
+		return nullptr;
+	}
+
 	int numBytesToSend = (int)dataStream->getTotalLength();
 	float numDataPackets = (float)(ceilf(numBytesToSend*1.0f / DATA_PACKET_MAX_LENGTH));
 	int totalBytesToSend = (int)(numDataPackets * DATA_PACKET_MAX_LENGTH);
-	DBG("File size : " << numBytesToSend << ", split into " << numDataPackets << " =  " << totalBytesToSend << " total bytes");
+	//DBG("File size : " << numBytesToSend << ", split into " << numDataPackets << " =  " << totalBytesToSend << " total bytes");
 	MemoryBlock fwData;
 	dataStream->readIntoMemoryBlock(fwData);
 
@@ -95,10 +102,11 @@ Firmware * FirmwareManager::getFirmwareForFile(File f)
 	if (!fwMeta.isObject())
 	{
 		DBG("Problem with meta here");
+		f.deleteFile(); 
 		return nullptr;
 	}
 
-	DBG("Got firmware : " << JSON::toString(fwMeta));
+	//DBG("Got firmware : " << JSON::toString(fwMeta));
 
 	int targetVID = (int)fwMeta.getProperty("usb_vid", 0);
 	int targetPID = (int)fwMeta.getProperty("usb_pid", 0);
@@ -112,7 +120,7 @@ Firmware * FirmwareManager::getFirmwareForFile(File f)
 	String fwInfos = fwIdent + ", version " + targetVersion + " (" + fwDate + ")";
 	Firmware * fw = new Firmware(fwData, totalBytesToSend, fwMeta, f.getFileNameWithoutExtension(), targetVersion, targetVersion.getFloatValue(), hwRev, targetPID, targetVID);
 	
-	DBG("Firmware : " << String::toHexString(fw->hwRev) << " : " << Firmware::getHwRevNameforHwRev(fw->hwRev));
+	//DBG("Firmware : " << String::toHexString(fw->hwRev) << " : " << Firmware::getHwRevNameforHwRev(fw->hwRev));
 
 	for (int i = 0; i < TYPE_MAX; i++)
 	{
@@ -215,13 +223,29 @@ void FirmwareManager::run()
 				for (int i = 0; i < onlineFirmwares; i++)
 				{
 					File f = firmwareFolder.getChildFile(fileData[i].toString());
+
+					bool fileExistAndIsValid = false;
 					if (f.existsAsFile() && f.getSize() > 0)
 					{
-						DBG("File already downloaded");
+						std::unique_ptr<Firmware> fw(getFirmwareForFile(f));
+						if (fw != nullptr)
+						{
+							DBG("File already downloaded and valid : "+f.getFileName());
+							fileExistAndIsValid = true;
+						}
+						else
+						{
+							DBG("File already there but not valid : " + f.getFileName());
+							f.deleteFile();
+						}
+					}
+
+					if (fileExistAndIsValid)
+					{
 						firmwareProgress.set(downloadedFirmwares, 1);
 						downloadedFirmwares++;
 						if (downloadedFirmwares == onlineFirmwares) loadFirmwares();
-					} else
+					}else
 					{
                         String fURL = remoteHost + String("firmwares/") + URL::addEscapeChars(fileData[i].toString(),false); //add handling for spaces
                         
