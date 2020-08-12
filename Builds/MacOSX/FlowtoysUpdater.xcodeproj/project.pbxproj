@@ -248,6 +248,13 @@
 			path = ../../JuceLibraryCode/AppConfig.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		441828CD1CA1A147839703D2 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = JuceHeader.h;
+			path = ../../JuceLibraryCode/JuceHeader.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		4779C5E73DE6C4DA69B8F872 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -649,6 +656,7 @@
 				70CBEC2191BA03AE3F9DCF4F,
 				529584589184B70F40D0A4B2,
 				BE3485DA657CA5C73A1C7732,
+				441828CD1CA1A147839703D2,
 			);
 			name = "JUCE Library Code";
 			sourceTree = "<group>";
