@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="hVyD2E" name="FlowtoysUpdater" projectType="guiapp" bundleIdentifier="com.benkuper.flowtoysupdater"
-              version="1.1.8" jucerFormatVersion="1">
+              version="1.1.9" jucerFormatVersion="1">
   <MAINGROUP id="dV0bQz" name="FlowtoysUpdater">
     <GROUP id="{3E48F26E-9168-5801-2C1A-DC5932568907}" name="Source">
       <FILE id="iIbBNu" name="AppUpdater.cpp" compile="1" resource="0" file="Source/AppUpdater.cpp"/>

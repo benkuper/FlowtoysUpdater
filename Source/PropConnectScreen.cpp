@@ -161,10 +161,10 @@ void PropConnectScreen::checkProps()
 				break;
 			}
 		}
-
-		resetBTLink.setVisible(PropManager::getInstance()->props.size() == 0);
-		flashBT.setEnabled(PropManager::getInstance()->props.size() > 0 && !multipleRevisionsDetected);
 	}
+
+	resetBTLink.setVisible(PropManager::getInstance()->props.size() == 0);
+	flashBT.setEnabled(PropManager::getInstance()->props.size() > 0 && !multipleRevisionsDetected);
 	
 	resized();
 }
