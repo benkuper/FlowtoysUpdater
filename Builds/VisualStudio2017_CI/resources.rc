@@ -1,3 +1,5 @@
+#pragma code_page(65001)
+
 #ifdef JUCE_USER_DEFINED_RC_FILE
  #include JUCE_USER_DEFINED_RC_FILE
 #else
@@ -7,16 +9,16 @@
 #include <windows.h>
 
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION  1,1,7,0
+FILEVERSION  1,1,8,0
 BEGIN
   BLOCK "StringFileInfo"
   BEGIN
     BLOCK "040904E4"
     BEGIN
       VALUE "FileDescription",  "FlowtoysUpdater\0"
-      VALUE "FileVersion",  "1.1.7\0"
+      VALUE "FileVersion",  "1.1.8\0"
       VALUE "ProductName",  "FlowtoysUpdater\0"
-      VALUE "ProductVersion",  "1.1.7\0"
+      VALUE "ProductVersion",  "1.1.8\0"
     END
   END
 

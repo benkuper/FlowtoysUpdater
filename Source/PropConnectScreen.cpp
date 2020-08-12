@@ -149,20 +149,23 @@ void PropConnectScreen::checkProps()
 	uint16_t hwRev = 0;
 	multipleRevisionsDetected = false;
 
-	for (auto & p : PropManager::getInstance()->props)
+	if (PropManager::getInstance()->selectedType == PropType::CLUB) // only check vision
 	{
-		if(hwRev == 0) hwRev = p->hw_rev;
-		if (hwRev != p->hw_rev)
+		for (auto& p : PropManager::getInstance()->props)
 		{
-			DBG("Revision different " << (int)hwRev << " / " << (int)p->hw_rev);
-			multipleRevisionsDetected = true;
-			break;
+			if (hwRev == 0) hwRev = p->hw_rev;
+			if (hwRev != p->hw_rev)
+			{
+				DBG("Revision different " << (int)hwRev << " / " << (int)p->hw_rev);
+				multipleRevisionsDetected = true;
+				break;
+			}
 		}
+
+		resetBTLink.setVisible(PropManager::getInstance()->props.size() == 0);
+		flashBT.setEnabled(PropManager::getInstance()->props.size() > 0 && !multipleRevisionsDetected);
 	}
-
-	resetBTLink.setVisible(PropManager::getInstance()->props.size() == 0);
-	flashBT.setEnabled(PropManager::getInstance()->props.size() > 0 && !multipleRevisionsDetected);
-
+	
 	resized();
 }
 
